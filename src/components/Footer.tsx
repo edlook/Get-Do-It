@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-accent text-accent-foreground overflow-hidden">
       {/* City skyline at bottom */}
-      <CitySkyline className="absolute bottom-0 left-0 w-full h-64" />
+      <CitySkyline className="absolute bottom-0 left-0 w-full h-80" />
 
       <div className="container mx-auto px-4 pt-12 pb-20 relative z-10">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
