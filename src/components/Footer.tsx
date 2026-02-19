@@ -13,7 +13,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 pt-12 pb-20 relative z-10">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
-            <img src={logo} alt="GetDoIt" className="h-20 w-auto mb-4 brightness-0 invert" />
+            <img src={logo} alt="GetDoIt" className="h-20 w-auto mb-4" />
             <p className="text-sm opacity-70">{tr.footer.rights}</p>
           </div>
           <div>
