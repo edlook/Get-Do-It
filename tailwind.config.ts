@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Space Grotesk', 'sans-serif'],
+        sans: ['Roboto', 'sans-serif'],
+        display: ['Montserrat', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -54,6 +54,7 @@ export default {
         brand: {
           gold: "hsl(var(--brand-gold))",
           red: "hsl(var(--brand-red))",
+          "dark-red": "hsl(var(--brand-dark-red))",
           dark: "hsl(var(--brand-dark))",
           light: "hsl(var(--brand-light))",
           gray: "hsl(var(--brand-gray))",

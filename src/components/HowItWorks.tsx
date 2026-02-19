@@ -1,6 +1,7 @@
 import { useLang } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { FileText, MessageSquare, UserCheck } from 'lucide-react';
+import GeometricPattern from '@/components/GeometricPattern';
 
 export default function HowItWorks() {
   const { tr } = useLang();
@@ -12,8 +13,10 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-light">
-      <div className="container mx-auto px-4">
+    <section className="relative py-16 md:py-24 bg-brand-light overflow-hidden">
+      <GeometricPattern color="hsl(37 84% 53% / 0.12)" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -38,13 +41,13 @@ export default function HowItWorks() {
               transition={{ delay: i * 0.15 }}
               className="relative text-center"
             >
-              <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
-                <step.icon className="h-7 w-7 text-primary" />
+              <div className="mx-auto w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-5 border-2 border-accent/20">
+                <step.icon className="h-7 w-7 text-accent" />
               </div>
-              <span className="absolute -top-2 right-1/2 translate-x-10 text-5xl font-display font-bold text-primary/10">
+              <span className="absolute -top-2 right-1/2 translate-x-10 text-5xl font-display font-bold text-accent/10">
                 {step.num}
               </span>
-              <h3 className="text-xl font-display font-semibold text-foreground mb-2">
+              <h3 className="text-xl font-display font-bold text-foreground mb-2">
                 {step.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">

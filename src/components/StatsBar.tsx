@@ -13,8 +13,8 @@ export default function StatsBar() {
   ];
 
   return (
-    <section className="bg-card border-y border-border">
-      <div className="container mx-auto px-4 py-10">
+    <section className="bg-accent text-accent-foreground">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <motion.div
@@ -25,12 +25,12 @@ export default function StatsBar() {
               transition={{ delay: i * 0.1 }}
               className="flex items-start gap-3"
             >
-              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <stat.icon className="h-5 w-5 text-primary" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent-foreground/10 flex items-center justify-center">
+                <stat.icon className="h-5 w-5 text-accent-foreground" />
               </div>
               <div>
-                <p className="font-display font-semibold text-sm text-foreground">{stat.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{stat.desc}</p>
+                <p className="font-display font-bold text-sm">{stat.title}</p>
+                <p className="text-xs opacity-80 mt-0.5">{stat.desc}</p>
               </div>
             </motion.div>
           ))}

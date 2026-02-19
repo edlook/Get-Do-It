@@ -2,6 +2,7 @@ import { useLang } from '@/contexts/LanguageContext';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import heroImg from '@/assets/hero-illustration.png';
+import GeometricPattern from '@/components/GeometricPattern';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -10,14 +11,16 @@ export default function Hero() {
   const [search, setSearch] = useState('');
 
   return (
-    <section className="relative overflow-hidden bg-brand-light">
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-2xl relative z-10">
+    <section className="relative overflow-hidden bg-background min-h-[520px]">
+      <GeometricPattern color="hsl(0 0% 80% / 0.25)" />
+      
+      <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <div className="max-w-2xl">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-6xl font-display font-bold text-foreground leading-tight"
+            className="text-4xl md:text-[56px] font-display font-extrabold text-foreground leading-tight"
           >
             {tr.hero.title}
           </motion.h1>
@@ -34,7 +37,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 flex items-center bg-card rounded-xl shadow-lg border border-border overflow-hidden"
+            className="mt-8 flex items-center bg-card rounded-lg shadow-lg border border-border overflow-hidden"
           >
             <input
               type="text"
@@ -43,8 +46,7 @@ export default function Hero() {
               placeholder={tr.hero.searchPlaceholder}
               className="flex-1 px-5 py-4 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base"
             />
-            <Button className="m-1.5 px-6 py-3 h-auto rounded-lg bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
-              <Search className="h-4 w-4 mr-2" />
+            <Button className="m-1.5 px-8 py-3 h-auto rounded-md bg-accent text-accent-foreground font-bold text-base hover:bg-brand-dark-red transition-colors">
               {tr.hero.searchButton}
             </Button>
           </motion.div>
@@ -65,7 +67,7 @@ export default function Hero() {
           >
             <a
               href="#"
-              className="inline-block mt-6 text-sm font-medium text-accent border border-accent/30 rounded-full px-5 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="inline-block mt-6 text-sm font-medium text-primary border border-primary/40 rounded-full px-5 py-2.5 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               {tr.hero.becomeProvider}
             </a>
@@ -83,6 +85,20 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="w-full h-auto"
         />
+      </div>
+
+      {/* Decorative dots row */}
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-1.5 pb-4">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-1.5 h-1.5 rounded-full"
+            style={{
+              backgroundColor: i % 3 === 0 ? 'hsl(var(--brand-red))' : 'hsl(var(--brand-gold))',
+              opacity: 0.5,
+            }}
+          />
+        ))}
       </div>
     </section>
   );
