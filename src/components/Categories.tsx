@@ -1,5 +1,6 @@
 import { useLang } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
+import GeometricPattern from '@/components/GeometricPattern';
 import {
   Truck, Hammer, Package, Sparkles, Monitor, Camera,
   Code, Wrench, PartyPopper, Palette, Headphones, Smartphone,
@@ -35,8 +36,9 @@ export default function Categories() {
   const { tr } = useLang();
 
   return (
-    <section className="py-16 md:py-24 bg-background">
-      <div className="container mx-auto px-4">
+    <section className="relative py-16 md:py-24 bg-background overflow-hidden">
+      <GeometricPattern color="hsl(0 0% 80% / 0.2)" />
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -72,7 +74,7 @@ export default function Categories() {
         </div>
 
         <div className="text-center mt-10">
-          <a href="#" className="text-sm font-semibold text-accent hover:underline">
+          <a href="#categories-all" className="text-sm font-semibold text-accent hover:underline cursor-pointer">
             {tr.categories.viewAll} →
           </a>
         </div>
