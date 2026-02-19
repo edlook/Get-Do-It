@@ -74,7 +74,7 @@ export default function Categories() {
         </div>
 
         <div className="text-center mt-10">
-          <a href="#categories-all" className="text-sm font-semibold text-accent hover:underline cursor-pointer">
+          <a href="/categories" className="text-sm font-semibold text-accent hover:underline cursor-pointer">
             {tr.categories.viewAll} →
           </a>
         </div>
