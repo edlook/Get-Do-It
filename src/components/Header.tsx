@@ -34,15 +34,24 @@ export default function Header() {
             {lang === 'de' ? '🇬🇧 EN' : '🇩🇪 DE'}
           </button>
           {user ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden md:inline-flex border-accent text-accent hover:bg-accent hover:text-accent-foreground gap-2"
-              onClick={signOut}
-            >
-              <LogOut className="h-4 w-4" />
-              {lang === 'de' ? 'Abmelden' : 'Log out'}
-            </Button>
+            <div className="hidden md:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                asChild
+              >
+                <a href="/dashboard">{lang === 'de' ? 'Mein Konto' : 'My Account'}</a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground gap-1"
+                onClick={signOut}
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
             <Button
               variant="outline"
@@ -65,9 +74,12 @@ export default function Header() {
           <a href="/create-task" className="block text-sm font-medium text-foreground">{tr.nav.createTask}</a>
           <a href="/tasks" className="block text-sm font-medium text-foreground">{tr.nav.findTasks}</a>
           {user ? (
-            <Button variant="outline" size="sm" className="w-full border-accent text-accent" onClick={signOut}>
-              {lang === 'de' ? 'Abmelden' : 'Log out'}
-            </Button>
+            <>
+              <a href="/dashboard" className="block text-sm font-medium text-foreground">{lang === 'de' ? 'Mein Konto' : 'My Account'}</a>
+              <Button variant="outline" size="sm" className="w-full border-accent text-accent" onClick={signOut}>
+                {lang === 'de' ? 'Abmelden' : 'Log out'}
+              </Button>
+            </>
           ) : (
             <Button variant="outline" size="sm" className="w-full border-accent text-accent" asChild>
               <a href="/auth">{tr.nav.login}</a>

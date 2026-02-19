@@ -23,9 +23,10 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [city, setCity] = useState('');
   const [role, setRole] = useState<'client' | 'provider'>('client');
+  const [registered, setRegistered] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/');
+    if (user) navigate('/dashboard');
   }, [user, navigate]);
 
   const tr = {
@@ -43,7 +44,11 @@ export default function Auth() {
       switchToRegister: 'Noch kein Konto? Registrieren',
       switchToLogin: 'Bereits registriert? Anmelden',
       loginSuccess: 'Erfolgreich angemeldet!',
-      registerSuccess: 'Bitte bestätigen Sie Ihre E-Mail-Adresse.',
+      registerSuccess: 'Registrierung erfolgreich!',
+      checkEmail: 'Bitte bestätigen Sie Ihre E-Mail-Adresse über den Link in Ihrem Postfach.',
+      registeredTitle: 'Fast geschafft!',
+      registeredMessage: 'Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Bitte klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.',
+      backToLogin: 'Zurück zur Anmeldung',
       error: 'Fehler',
     },
     en: {
@@ -60,7 +65,11 @@ export default function Auth() {
       switchToRegister: "Don't have an account? Sign up",
       switchToLogin: 'Already registered? Log in',
       loginSuccess: 'Successfully logged in!',
-      registerSuccess: 'Please confirm your email address.',
+      registerSuccess: 'Registration successful!',
+      checkEmail: 'Please confirm your email address via the link sent to your inbox.',
+      registeredTitle: 'Almost there!',
+      registeredMessage: 'We sent you a confirmation email. Please click the link in the email to activate your account.',
+      backToLogin: 'Back to login',
       error: 'Error',
     },
   };
@@ -75,7 +84,7 @@ export default function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast({ title: t.loginSuccess });
-        navigate('/');
+        navigate('/dashboard');
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -86,7 +95,8 @@ export default function Auth() {
           },
         });
         if (error) throw error;
-        toast({ title: t.registerSuccess });
+        setRegistered(true);
+        toast({ title: t.registerSuccess, description: t.checkEmail });
       }
     } catch (err: any) {
       toast({ title: t.error, description: err.message, variant: 'destructive' });
@@ -100,6 +110,17 @@ export default function Auth() {
       <Header />
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
+          {registered ? (
+            <div className="bg-card rounded-xl p-8 border border-border shadow-sm text-center space-y-4">
+              <div className="text-5xl">📧</div>
+              <h2 className="text-2xl font-display font-bold text-foreground">{t.registeredTitle}</h2>
+              <p className="text-muted-foreground">{t.registeredMessage}</p>
+              <Button variant="outline" className="mt-4" onClick={() => { setRegistered(false); setIsLogin(true); }}>
+                {t.backToLogin}
+              </Button>
+            </div>
+          ) : (
+          <>
           <h1 className="text-3xl font-display font-bold text-foreground text-center mb-8">
             {isLogin ? t.loginTitle : t.registerTitle}
           </h1>
@@ -166,6 +187,8 @@ export default function Auth() {
               {isLogin ? t.switchToRegister : t.switchToLogin}
             </button>
           </form>
+          </>
+          )}
         </div>
       </main>
       <Footer />

@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import AllCategories from "./pages/AllCategories";
 import CreateTask from "./pages/CreateTask";
 import FindTasks from "./pages/FindTasks";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/categories" element={<AllCategories />} />
               <Route path="/create-task" element={<CreateTask />} />
               <Route path="/tasks" element={<FindTasks />} />

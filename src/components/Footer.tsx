@@ -28,25 +28,25 @@ export default function Footer() {
             <ul className="space-y-2 text-sm opacity-80">
               <li><a href="/tasks" className="hover:opacity-100 transition-opacity">{tr.footer.findTasks}</a></li>
               <li><a href="/auth" className="hover:opacity-100 transition-opacity">{tr.footer.becomeProvider}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.pricing}</a></li>
+              <li><a href="/categories" className="hover:opacity-100 transition-opacity">{tr.footer.pricing}</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-display font-bold text-sm mb-3">{tr.footer.blog}</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost1}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost2}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost3}</a></li>
+              <li><a href="/blog/best-provider" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost1}</a></li>
+              <li><a href="/blog/first-task" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost2}</a></li>
+              <li><a href="/blog/online-safety" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost3}</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-display font-bold text-sm mb-3">{tr.footer.help}</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.faq}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.contact}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.terms}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.privacy}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.about}</a></li>
+              <li><a href="/faq" className="hover:opacity-100 transition-opacity">{tr.footer.faq}</a></li>
+              <li><a href="/contact" className="hover:opacity-100 transition-opacity">{tr.footer.contact}</a></li>
+              <li><a href="/terms" className="hover:opacity-100 transition-opacity">{tr.footer.terms}</a></li>
+              <li><a href="/privacy" className="hover:opacity-100 transition-opacity">{tr.footer.privacy}</a></li>
+              <li><a href="/about" className="hover:opacity-100 transition-opacity">{tr.footer.about}</a></li>
             </ul>
           </div>
         </div>
