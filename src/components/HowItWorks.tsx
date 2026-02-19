@@ -44,7 +44,7 @@ export default function HowItWorks() {
               <div className="mx-auto w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-5 border-2 border-accent/20">
                 <step.icon className="h-7 w-7 text-accent" />
               </div>
-              <span className="absolute -top-2 right-1/2 translate-x-10 text-5xl font-display font-bold text-accent/10">
+              <span className="absolute -top-4 -right-2 text-6xl font-display font-bold text-accent/10 select-none">
                 {step.num}
               </span>
               <h3 className="text-xl font-display font-bold text-foreground mb-2">
