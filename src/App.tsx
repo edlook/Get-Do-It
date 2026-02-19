@@ -8,6 +8,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AllCategories from "./pages/AllCategories";
+import CreateTask from "./pages/CreateTask";
+import FindTasks from "./pages/FindTasks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/categories" element={<AllCategories />} />
+              <Route path="/create-task" element={<CreateTask />} />
+              <Route path="/tasks" element={<FindTasks />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

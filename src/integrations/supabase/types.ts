@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      tasks: {
+        Row: {
+          address: string | null
+          budget_from: number | null
+          budget_to: number | null
+          category: string
+          city: string
+          created_at: string
+          deadline: string | null
+          description: string
+          id: string
+          responses_count: number
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          budget_from?: number | null
+          budget_to?: number | null
+          category?: string
+          city?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          responses_count?: number
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          budget_from?: number | null
+          budget_to?: number | null
+          category?: string
+          city?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          responses_count?: number
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -77,6 +128,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      task_status: "open" | "in_progress" | "completed" | "cancelled"
       user_role: "client" | "provider"
     }
     CompositeTypes: {
@@ -206,6 +258,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      task_status: ["open", "in_progress", "completed", "cancelled"],
       user_role: ["client", "provider"],
     },
   },
