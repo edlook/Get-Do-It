@@ -15,7 +15,7 @@ export default function StatsBar() {
 
   return (
     <section className="relative bg-accent text-accent-foreground overflow-hidden">
-      <CitySkyline className="absolute bottom-0 left-0 w-full h-40 opacity-50" />
+      <CitySkyline className="absolute bottom-0 left-0 w-full h-48" />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
