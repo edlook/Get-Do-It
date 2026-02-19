@@ -7,11 +7,10 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-accent text-accent-foreground overflow-hidden">
-      {/* City skyline at bottom */}
       <CitySkyline className="absolute bottom-0 left-0 w-full h-80" />
 
-      <div className="container mx-auto px-4 pt-12 pb-20 relative z-10">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 pt-12 pb-24 relative z-10">
+        <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-8">
           <div>
             <img src={logo} alt="GetDoIt" className="h-20 w-auto mb-4" />
             <p className="text-sm opacity-70">{tr.footer.rights}</p>
@@ -19,22 +18,34 @@ export default function Footer() {
           <div>
             <h4 className="font-display font-bold text-sm mb-3">{tr.footer.forClients}</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.createTask}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.categories}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.howItWorksLink}</a></li>
+              <li><a href="/create-task" className="hover:opacity-100 transition-opacity">{tr.footer.createTask}</a></li>
+              <li><a href="/categories" className="hover:opacity-100 transition-opacity">{tr.footer.categories}</a></li>
+              <li><a href="#how-it-works" className="hover:opacity-100 transition-opacity">{tr.footer.howItWorksLink}</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-display font-bold text-sm mb-3">{tr.footer.forProviders}</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.findTasks}</a></li>
-              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.becomeProvider}</a></li>
+              <li><a href="/tasks" className="hover:opacity-100 transition-opacity">{tr.footer.findTasks}</a></li>
+              <li><a href="/auth" className="hover:opacity-100 transition-opacity">{tr.footer.becomeProvider}</a></li>
               <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.pricing}</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-display font-bold text-sm mb-3">{tr.footer.company}</h4>
+            <h4 className="font-display font-bold text-sm mb-3">{tr.footer.blog}</h4>
             <ul className="space-y-2 text-sm opacity-80">
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost1}</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost2}</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.blogPost3}</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-display font-bold text-sm mb-3">{tr.footer.help}</h4>
+            <ul className="space-y-2 text-sm opacity-80">
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.faq}</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.contact}</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.terms}</a></li>
+              <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.privacy}</a></li>
               <li><a href="#" className="hover:opacity-100 transition-opacity">{tr.footer.about}</a></li>
             </ul>
           </div>

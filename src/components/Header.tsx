@@ -18,10 +18,10 @@ export default function Header() {
             <img src={logo} alt="GetDoIt" className="h-12 md:h-14" />
           </a>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+            <a href="/create-task" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
               {tr.nav.createTask}
             </a>
-            <a href="#" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+            <a href="/tasks" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
               {tr.nav.findTasks}
             </a>
           </nav>
@@ -62,8 +62,8 @@ export default function Header() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
-          <a href="#" className="block text-sm font-medium text-foreground">{tr.nav.createTask}</a>
-          <a href="#" className="block text-sm font-medium text-foreground">{tr.nav.findTasks}</a>
+          <a href="/create-task" className="block text-sm font-medium text-foreground">{tr.nav.createTask}</a>
+          <a href="/tasks" className="block text-sm font-medium text-foreground">{tr.nav.findTasks}</a>
           {user ? (
             <Button variant="outline" size="sm" className="w-full border-accent text-accent" onClick={signOut}>
               {lang === 'de' ? 'Abmelden' : 'Log out'}
