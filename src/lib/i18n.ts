@@ -1,0 +1,158 @@
+export type Lang = 'de' | 'en';
+
+const translations = {
+  de: {
+    nav: {
+      createTask: 'Auftrag erstellen',
+      findTasks: 'Aufträge finden',
+      login: 'Anmelden',
+    },
+    hero: {
+      title: 'Wir befreien Sie von Sorgen',
+      subtitle: 'Wir helfen Ihnen, zuverlässige Dienstleister für jede Aufgabe zu finden',
+      searchPlaceholder: 'Dienstleistung oder Fachkraft suchen',
+      searchButton: 'Suchen',
+      example: 'z.B. Waschmaschine installieren',
+      becomeProvider: 'Dienstleister werden und Geld verdienen',
+    },
+    stats: {
+      providers: 'Über 50.000 Dienstleister',
+      providersDesc: 'in ganz Deutschland & Europa',
+      services: 'Über 12.000 Dienste',
+      servicesDesc: 'von Renovierung bis Webdesign',
+      years: 'Sicher & Zuverlässig',
+      yearsDesc: 'geprüfte Dienstleister',
+      payment: 'Sichere Bezahlung',
+      paymentDesc: 'und Schutz bei Problemen',
+    },
+    categories: {
+      title: 'Tausende Dienstleister',
+      subtitle: 'mit ehrlichen Bewertungen in den Kategorien:',
+      viewAll: 'Alle Dienstleistungen anzeigen',
+      courier: 'Kurierdienste',
+      renovation: 'Renovierung & Bau',
+      moving: 'Umzüge & Transport',
+      cleaning: 'Reinigung & Haushalt',
+      computer: 'IT & Computer-Hilfe',
+      photo: 'Foto, Video & Audio',
+      software: 'Softwareentwicklung',
+      appliance: 'Geräte-Installation & Reparatur',
+      events: 'Events & Promotion',
+      design: 'Design & Grafik',
+      assistant: 'Virtueller Assistent',
+      repair: 'Digitale Geräte-Reparatur',
+      beauty: 'Schönheit & Gesundheit',
+      legal: 'Recht & Buchhaltung',
+      auto: 'Fahrzeugreparatur',
+      tutoring: 'Nachhilfe & Unterricht',
+    },
+    howItWorks: {
+      title: 'Wie funktioniert GetDoIt?',
+      subtitle: 'Sie wählen nur unter interessierten Dienstleistern anhand von Bewertungen, Preisen und Arbeitsbeispielen',
+      step1title: 'Beschreiben',
+      step1desc: 'Sie Ihre Aufgabe und Bedingungen. Das ist kostenlos und dauert 3–4 Minuten.',
+      step2title: 'Angebote erhalten',
+      step2desc: 'mit Preisen von Dienstleistern. In der Regel innerhalb von 30 Minuten.',
+      step3title: 'Auswählen',
+      step3desc: 'den passenden Dienstleister und besprechen Sie die Ausführungsfristen.',
+    },
+    testimonials: {
+      title: 'Bewertungen der Dienstleister',
+    },
+    footer: {
+      rights: '© 2026 GetDoIt. Alle Rechte vorbehalten.',
+      forClients: 'Für Auftraggeber',
+      forProviders: 'Für Dienstleister',
+      company: 'Unternehmen',
+      about: 'Über uns',
+      howItWorksLink: 'So funktioniert es',
+      categories: 'Kategorien',
+      createTask: 'Auftrag erstellen',
+      findTasks: 'Aufträge finden',
+      becomeProvider: 'Dienstleister werden',
+      pricing: 'Preise',
+    },
+  },
+  en: {
+    nav: {
+      createTask: 'Create Task',
+      findTasks: 'Find Tasks',
+      login: 'Log in',
+    },
+    hero: {
+      title: 'We free you from worries',
+      subtitle: 'We help you find reliable professionals for any task',
+      searchPlaceholder: 'Service or specialist',
+      searchButton: 'Search',
+      example: 'e.g., install a washing machine',
+      becomeProvider: 'Become a provider and start earning',
+    },
+    stats: {
+      providers: 'Over 50,000 Providers',
+      providersDesc: 'across Germany & Europe',
+      services: 'Over 12,000 Services',
+      servicesDesc: 'from renovation to copywriting',
+      years: 'Safe & Reliable',
+      yearsDesc: 'verified professionals',
+      payment: 'Secure Payment',
+      paymentDesc: 'and protection from issues',
+    },
+    categories: {
+      title: 'Thousands of Professionals',
+      subtitle: 'with honest reviews in categories:',
+      viewAll: 'View all services',
+      courier: 'Courier Services',
+      renovation: 'Renovation & Construction',
+      moving: 'Moving & Transport',
+      cleaning: 'Cleaning & Household',
+      computer: 'IT & Computer Help',
+      photo: 'Photo, Video & Audio',
+      software: 'Software Development',
+      appliance: 'Appliance Installation & Repair',
+      events: 'Events & Promotions',
+      design: 'Design & Graphics',
+      assistant: 'Virtual Assistant',
+      repair: 'Digital Device Repair',
+      beauty: 'Beauty & Health',
+      legal: 'Legal & Accounting',
+      auto: 'Vehicle Repair',
+      tutoring: 'Tutoring & Education',
+    },
+    howItWorks: {
+      title: 'How does GetDoIt work?',
+      subtitle: 'You choose only from interested professionals based on reviews, prices and work samples',
+      step1title: 'Describe',
+      step1desc: 'your task and conditions. It\'s free and takes 3–4 minutes.',
+      step2title: 'Get responses',
+      step2desc: 'with prices from professionals. Usually within 30 minutes.',
+      step3title: 'Choose',
+      step3desc: 'the right professional and discuss the timeline.',
+    },
+    testimonials: {
+      title: 'Provider Reviews',
+    },
+    footer: {
+      rights: '© 2026 GetDoIt. All rights reserved.',
+      forClients: 'For Clients',
+      forProviders: 'For Providers',
+      company: 'Company',
+      about: 'About us',
+      howItWorksLink: 'How it works',
+      categories: 'Categories',
+      createTask: 'Create Task',
+      findTasks: 'Find Tasks',
+      becomeProvider: 'Become a Provider',
+      pricing: 'Pricing',
+    },
+  },
+} as const;
+
+type DeepStringRecord<T> = {
+  [K in keyof T]: T[K] extends string ? string : DeepStringRecord<T[K]>;
+};
+
+export type Translations = DeepStringRecord<typeof translations['de']>;
+
+export function t(lang: Lang): Translations {
+  return translations[lang];
+}
