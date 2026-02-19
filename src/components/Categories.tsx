@@ -49,7 +49,7 @@ export default function Categories() {
           <p className="text-muted-foreground mt-2">{tr.categories.subtitle}</p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-4xl mx-auto">
           {categoryIcons.map((key, i) => {
             const Icon = iconMap[key];
             return (
@@ -60,12 +60,10 @@ export default function Categories() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 hover:shadow-md transition-all group"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors group"
               >
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Icon className="h-5 w-5 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">
+                <Icon className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors flex-shrink-0" />
+                <span className="text-sm font-medium text-foreground group-hover:text-accent transition-colors">
                   {tr.categories[key]}
                 </span>
               </motion.a>
@@ -74,7 +72,7 @@ export default function Categories() {
         </div>
 
         <div className="text-center mt-10">
-          <a href="#" className="text-sm font-semibold text-primary hover:underline">
+          <a href="#" className="text-sm font-semibold text-accent hover:underline">
             {tr.categories.viewAll} →
           </a>
         </div>
