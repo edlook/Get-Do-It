@@ -12,6 +12,7 @@ import CreateTask from "./pages/CreateTask";
 import FindTasks from "./pages/FindTasks";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import StaticPage from "./pages/StaticPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,12 @@ const App = () => (
               <Route path="/categories" element={<AllCategories />} />
               <Route path="/create-task" element={<CreateTask />} />
               <Route path="/tasks" element={<FindTasks />} />
+              <Route path="/faq" element={<StaticPage titleKey="faq" />} />
+              <Route path="/contact" element={<StaticPage titleKey="contact" />} />
+              <Route path="/terms" element={<StaticPage titleKey="terms" />} />
+              <Route path="/privacy" element={<StaticPage titleKey="privacy" />} />
+              <Route path="/about" element={<StaticPage titleKey="about" />} />
+              <Route path="/blog/*" element={<StaticPage titleKey="blog" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
