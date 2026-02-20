@@ -13,6 +13,8 @@ import FindTasks from "./pages/FindTasks";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import StaticPage from "./pages/StaticPage";
+import BlogIndex from "./pages/BlogIndex";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +38,8 @@ const App = () => (
               <Route path="/terms" element={<StaticPage titleKey="terms" />} />
               <Route path="/privacy" element={<StaticPage titleKey="privacy" />} />
               <Route path="/about" element={<StaticPage titleKey="about" />} />
-              <Route path="/blog/*" element={<StaticPage titleKey="blog" />} />
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
