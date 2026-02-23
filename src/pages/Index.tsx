@@ -4,6 +4,7 @@ import StatsBar from '@/components/StatsBar';
 import Categories from '@/components/Categories';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
+import BlogPreview from '@/components/BlogPreview';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -15,6 +16,7 @@ const Index = () => {
       <Categories />
       <HowItWorks />
       <Testimonials />
+      <BlogPreview />
       <Footer />
     </div>
   );
