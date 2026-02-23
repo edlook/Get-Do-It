@@ -7,20 +7,20 @@ import useEmblaCarousel from 'embla-carousel-react';
 
 const reviews = {
   de: [
-    { task: 'Waschmaschine installieren', time: 'Dienstleister gefunden in 3 Min.', price: '95 €', review: 'Arbeit wurde hervorragend erledigt, keine Beanstandungen. Super Service!', name: 'Thomas M.', rating: 5, tasks: 312 },
-    { task: 'Paket abholen und liefern', time: 'Dienstleister gefunden in 1 Std.', price: '45 €', review: 'Schnell, freundlich und zuverlässig. Genau wie gewünscht!', name: 'Sarah K.', rating: 5, tasks: 856 },
-    { task: 'Mathe-Nachhilfe Klasse 7–8', time: 'Dienstleister gefunden in 15 Min.', price: '35 €/Std.', review: 'Großartiger Lehrer. Mein Kind versteht endlich Mathematik!', name: 'Anna L.', rating: 5, tasks: 142 },
-    { task: 'Logo-Design erstellen', time: 'Dienstleister gefunden in 1 Tag', price: '180 €', review: '6 verschiedene Entwürfe, alles sehr schnell und schön gemacht.', name: 'Michael F.', rating: 4.9, tasks: 567 },
-    { task: 'Generalreinigung 70 m²', time: 'Dienstleister gefunden in 5 Std.', price: '120 €', review: 'Sehr gründlich und freundlich. Die Wohnung glänzt wieder!', name: 'Julia R.', rating: 4.8, tasks: 203 },
-    { task: 'Umzugshilfe', time: 'Dienstleister gefunden in 30 Min.', price: '250 €', review: 'Super schnell und unkompliziert umgezogen. Sehr zu empfehlen!', name: 'Stefan W.', rating: 5, tasks: 445 },
+    { task: 'Waschmaschine installieren', time: 'Dienstleister gefunden in 3 Min.', price: '95 €', payMethod: 'Überweisung', review: 'Arbeit wurde hervorragend erledigt, keine Beanstandungen. Super Service!', date: '28. September 2025', name: 'Thomas M.', rating: 5, tasks: 312 },
+    { task: 'Paket abholen und liefern', time: 'Dienstleister gefunden in 1 Std.', price: '45 €', payMethod: 'Bar', review: 'Schnell, freundlich und zuverlässig. Genau wie gewünscht! Ein toller Service, den ich gerne weiterempfehle.', date: '19. Oktober 2025', name: 'Sarah K.', rating: 5, tasks: 856 },
+    { task: 'Mathe-Nachhilfe Klasse 7–8', time: 'Dienstleister gefunden in 15 Min.', price: '35 €/Std.', payMethod: 'Überweisung', review: 'Großartiger Lehrer. Mein Kind versteht endlich Mathematik. Erklärt sehr verständlich und geduldig.', date: '24. September 2025', name: 'Anna L.', rating: 5, tasks: 142 },
+    { task: 'Logo-Design erstellen', time: 'Dienstleister gefunden in 1 Tag', price: '180 €', payMethod: 'Überweisung', review: '6 verschiedene Entwürfe, alles sehr schnell und schön gemacht. Vielen Dank!', date: '10. August 2025', name: 'Michael F.', rating: 4.9, tasks: 567 },
+    { task: 'Generalreinigung 70 m²', time: 'Dienstleister gefunden in 5 Std.', price: '120 €', payMethod: 'Bar', review: 'Sehr gründlich und freundlich. Die Wohnung glänzt wieder! Alles tip-top sauber.', date: '5. November 2025', name: 'Julia R.', rating: 4.8, tasks: 203 },
+    { task: 'Umzugshilfe', time: 'Dienstleister gefunden in 30 Min.', price: '250 €', payMethod: 'Überweisung', review: 'Super schnell und unkompliziert umgezogen. Sehr zu empfehlen! Alles heil angekommen.', date: '12. Dezember 2025', name: 'Stefan W.', rating: 5, tasks: 445 },
   ],
   en: [
-    { task: 'Install washing machine', time: 'Provider found in 3 min.', price: '€95', review: 'Work was done excellently, no complaints. Great service!', name: 'Thomas M.', rating: 5, tasks: 312 },
-    { task: 'Pick up and deliver package', time: 'Provider found in 1 hr.', price: '€45', review: 'Fast, friendly and reliable. Exactly as requested!', name: 'Sarah K.', rating: 5, tasks: 856 },
-    { task: 'Math tutoring grades 7–8', time: 'Provider found in 15 min.', price: '€35/hr', review: 'Excellent teacher. My child finally understands math!', name: 'Anna L.', rating: 5, tasks: 142 },
-    { task: 'Create logo design', time: 'Provider found in 1 day', price: '€180', review: '6 different drafts, everything done quickly and beautifully.', name: 'Michael F.', rating: 4.9, tasks: 567 },
-    { task: 'Deep cleaning 70 m²', time: 'Provider found in 5 hrs.', price: '€120', review: 'Very thorough and friendly. The apartment shines again!', name: 'Julia R.', rating: 4.8, tasks: 203 },
-    { task: 'Moving help', time: 'Provider found in 30 min.', price: '€250', review: 'Super fast and hassle-free move. Highly recommended!', name: 'Stefan W.', rating: 5, tasks: 445 },
+    { task: 'Install washing machine', time: 'Provider found in 3 min.', price: '€95', payMethod: 'Bank transfer', review: 'Work was done excellently, no complaints. Great service!', date: 'Sep 28, 2025', name: 'Thomas M.', rating: 5, tasks: 312 },
+    { task: 'Pick up and deliver package', time: 'Provider found in 1 hr.', price: '€45', payMethod: 'Cash', review: 'Fast, friendly and reliable. Exactly as requested! A great service I happily recommend.', date: 'Oct 19, 2025', name: 'Sarah K.', rating: 5, tasks: 856 },
+    { task: 'Math tutoring grades 7–8', time: 'Provider found in 15 min.', price: '€35/hr', payMethod: 'Bank transfer', review: 'Excellent teacher. My child finally understands math. Explains very clearly and patiently.', date: 'Sep 24, 2025', name: 'Anna L.', rating: 5, tasks: 142 },
+    { task: 'Create logo design', time: 'Provider found in 1 day', price: '€180', payMethod: 'Bank transfer', review: '6 different drafts, everything done quickly and beautifully. Thank you so much!', date: 'Aug 10, 2025', name: 'Michael F.', rating: 4.9, tasks: 567 },
+    { task: 'Deep cleaning 70 m²', time: 'Provider found in 5 hrs.', price: '€120', payMethod: 'Cash', review: 'Very thorough and friendly. The apartment shines again! Everything squeaky clean.', date: 'Nov 5, 2025', name: 'Julia R.', rating: 4.8, tasks: 203 },
+    { task: 'Moving help', time: 'Provider found in 30 min.', price: '€250', payMethod: 'Bank transfer', review: 'Super fast and hassle-free move. Highly recommended! Everything arrived safely.', date: 'Dec 12, 2025', name: 'Stefan W.', rating: 5, tasks: 445 },
   ],
 };
 
@@ -29,10 +29,10 @@ export default function Testimonials() {
   const items = reviews[lang];
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start', slidesToScroll: 1 });
 
-  // Auto-scroll
+  // Auto-scroll every 3 seconds
   useEffect(() => {
     if (!emblaApi) return;
-    const interval = setInterval(() => emblaApi.scrollNext(), 4000);
+    const interval = setInterval(() => emblaApi.scrollNext(), 3000);
     return () => clearInterval(interval);
   }, [emblaApi]);
 
@@ -49,24 +49,44 @@ export default function Testimonials() {
           {tr.testimonials.title}
         </motion.h2>
 
-        <div className="relative max-w-5xl mx-auto">
+        <div className="relative max-w-6xl mx-auto">
           <div ref={emblaRef} className="overflow-hidden">
             <div className="flex -ml-4">
               {items.map((item, i) => (
-                <div key={i} className="min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 lg:basis-1/3 pl-4">
-                  <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full">
-                    <p className="font-semibold text-sm text-foreground">{item.task}</p>
+                <div key={i} className="min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4">
+                  <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
+                    {/* Task title + time */}
+                    <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
-                    <p className="text-xs font-medium text-primary mt-0.5">{item.price}</p>
-                    <p className="text-sm text-foreground mt-3 leading-relaxed">"{item.review}"</p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{item.name}</p>
+
+                    {/* Price + payment */}
+                    <div className="mt-3">
+                      <span className="text-base font-bold text-primary">{item.price}</span>
+                      <span className="text-xs text-muted-foreground ml-1.5">{item.payMethod}</span>
+                    </div>
+
+                    {/* Review text */}
+                    <p className="text-sm text-foreground mt-3 leading-relaxed flex-1">{item.review}</p>
+
+                    {/* Date */}
+                    <p className="text-xs text-muted-foreground mt-3">{item.date}</p>
+
+                    {/* Divider */}
+                    <div className="border-t border-border mt-4 pt-4 flex items-center gap-3">
+                      {/* Avatar placeholder */}
+                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground shrink-0">
+                        {item.name.charAt(0)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">{item.name}</p>
                         <div className="flex items-center gap-1 mt-0.5">
+                          <span className="text-xs text-muted-foreground">{lang === 'de' ? 'Bewertung:' : 'Rating:'}</span>
                           <Star className="h-3.5 w-3.5 fill-primary text-primary" />
                           <span className="text-xs font-medium text-foreground">{item.rating}</span>
-                          <span className="text-xs text-muted-foreground ml-1">· {item.tasks} {lang === 'de' ? 'Aufträge' : 'tasks'}</span>
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                          {lang === 'de' ? `${item.tasks} Aufträge` : `${item.tasks} tasks completed`}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -74,7 +94,6 @@ export default function Testimonials() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </section>
