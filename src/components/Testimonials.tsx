@@ -1,8 +1,8 @@
 import { useLang } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 import GeometricPattern from '@/components/GeometricPattern';
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 
 const reviews = {
@@ -28,22 +28,13 @@ export default function Testimonials() {
   const { lang, tr } = useLang();
   const items = reviews[lang];
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start', slidesToScroll: 1 });
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
-
+  // Auto-scroll
   useEffect(() => {
     if (!emblaApi) return;
-    onSelect();
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-    return () => { emblaApi.off('select', onSelect); };
-  }, [emblaApi, onSelect]);
+    const interval = setInterval(() => emblaApi.scrollNext(), 4000);
+    return () => clearInterval(interval);
+  }, [emblaApi]);
 
   return (
     <section className="relative py-16 md:py-24 bg-background overflow-hidden">
@@ -84,20 +75,6 @@ export default function Testimonials() {
             </div>
           </div>
 
-          <button
-            onClick={() => emblaApi?.scrollPrev()}
-            disabled={!canScrollPrev}
-            className="absolute -left-4 md:-left-12 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-30"
-          >
-            <ChevronLeft className="h-5 w-5 text-foreground" />
-          </button>
-          <button
-            onClick={() => emblaApi?.scrollNext()}
-            disabled={!canScrollNext}
-            className="absolute -right-4 md:-right-12 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-30"
-          >
-            <ChevronRight className="h-5 w-5 text-foreground" />
-          </button>
         </div>
       </div>
     </section>

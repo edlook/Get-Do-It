@@ -5,10 +5,16 @@ import heroImg from '@/assets/hero-illustration.png';
 import GeometricPattern from '@/components/GeometricPattern';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
   const { tr } = useLang();
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate(`/tasks${search ? `?q=${encodeURIComponent(search)}` : ''}`);
+  };
 
   return (
     <section className="relative overflow-hidden bg-background min-h-[520px]">
@@ -43,10 +49,11 @@ export default function Hero() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder={tr.hero.searchPlaceholder}
               className="flex-1 px-5 py-4 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base"
             />
-            <Button className="m-1.5 px-8 py-3 h-auto rounded-md bg-accent text-accent-foreground font-bold text-base hover:bg-brand-dark-red transition-colors">
+            <Button onClick={handleSearch} className="m-1.5 px-8 py-3 h-auto rounded-md bg-accent text-accent-foreground font-bold text-base hover:bg-brand-dark-red transition-colors">
               {tr.hero.searchButton}
             </Button>
           </motion.div>

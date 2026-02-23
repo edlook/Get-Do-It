@@ -4,49 +4,28 @@ import { useLang } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Calendar } from 'lucide-react';
+import blogBestProvider from '@/assets/blog-best-provider.png';
+import blogFirstTask from '@/assets/blog-first-task.png';
+import blogOnlineSafety from '@/assets/blog-online-safety.png';
 
 const posts = [
   {
     slug: 'best-provider',
-    image: '🔍',
-    de: {
-      title: 'Wie man den besten Dienstleister findet',
-      excerpt: 'Die Wahl des richtigen Dienstleisters kann den Unterschied zwischen einer stressfreien Erfahrung und einem Albtraum ausmachen.',
-      date: '15. Februar 2026',
-    },
-    en: {
-      title: 'How to Find the Best Service Provider',
-      excerpt: 'Choosing the right service provider can make the difference between a stress-free experience and a nightmare.',
-      date: 'February 15, 2026',
-    },
+    image: blogBestProvider,
+    de: { title: 'Wie man den besten Dienstleister findet', excerpt: 'Die Wahl des richtigen Dienstleisters kann den Unterschied zwischen einer stressfreien Erfahrung und einem Albtraum ausmachen.', date: '15. Februar 2026' },
+    en: { title: 'How to Find the Best Service Provider', excerpt: 'Choosing the right service provider can make the difference between a stress-free experience and a nightmare.', date: 'February 15, 2026' },
   },
   {
     slug: 'first-task',
-    image: '📝',
-    de: {
-      title: 'Tipps für die erste Auftragsstellung',
-      excerpt: 'Sie möchten zum ersten Mal einen Auftrag erstellen? Mit diesen Tipps erhalten Sie schnell die besten Angebote.',
-      date: '10. Februar 2026',
-    },
-    en: {
-      title: 'Tips for Your First Task',
-      excerpt: 'Want to create your first task? With these tips, you\'ll quickly receive the best offers.',
-      date: 'February 10, 2026',
-    },
+    image: blogFirstTask,
+    de: { title: 'Tipps für die erste Auftragsstellung', excerpt: 'Sie möchten zum ersten Mal einen Auftrag erstellen? Mit diesen Tipps erhalten Sie schnell die besten Angebote.', date: '10. Februar 2026' },
+    en: { title: 'Tips for Your First Task', excerpt: 'Want to create your first task? With these tips, you\'ll quickly receive the best offers.', date: 'February 10, 2026' },
   },
   {
     slug: 'online-safety',
-    image: '🛡️',
-    de: {
-      title: 'Sicherheit bei Online-Aufträgen',
-      excerpt: 'Online-Plattformen bieten viele Vorteile, aber Sicherheit sollte immer an erster Stelle stehen.',
-      date: '5. Februar 2026',
-    },
-    en: {
-      title: 'Safety with Online Tasks',
-      excerpt: 'Online platforms offer many advantages, but safety should always come first.',
-      date: 'February 5, 2026',
-    },
+    image: blogOnlineSafety,
+    de: { title: 'Sicherheit bei Online-Aufträgen', excerpt: 'Online-Plattformen bieten viele Vorteile, aber Sicherheit sollte immer an erster Stelle stehen.', date: '5. Februar 2026' },
+    en: { title: 'Safety with Online Tasks', excerpt: 'Online platforms offer many advantages, but safety should always come first.', date: 'February 5, 2026' },
   },
 ];
 
@@ -73,7 +52,9 @@ export default function BlogIndex() {
               <Link key={post.slug} to={`/blog/${post.slug}`} className="group">
                 <Card className="h-full transition-shadow hover:shadow-lg">
                   <CardContent className="p-6 flex flex-col h-full">
-                    <div className="text-5xl mb-4">{post.image}</div>
+                    <div className="aspect-[16/10] overflow-hidden rounded-t-lg mb-4">
+                      <img src={post.image} alt={content.title} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
                     <h2 className="text-lg font-display font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
                       {content.title}
                     </h2>
