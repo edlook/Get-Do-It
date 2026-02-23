@@ -39,6 +39,8 @@ export default function Testimonials() {
   return (
     <section className="relative py-16 md:py-24 bg-background overflow-hidden">
       <GeometricPattern color="hsl(0 0% 80% / 0.2)" />
+      
+      {/* Title stays centered in container */}
       <div className="container mx-auto px-4 relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -48,51 +50,45 @@ export default function Testimonials() {
         >
           {tr.testimonials.title}
         </motion.h2>
+      </div>
 
-        <div className="relative max-w-6xl mx-auto">
-          <div ref={emblaRef} className="overflow-hidden">
-            <div className="flex -ml-4">
-              {items.map((item, i) => (
-                <div key={i} className="min-w-0 shrink-0 grow-0 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4">
-                  <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
-                    {/* Task title + time */}
-                    <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+      {/* Carousel goes full-width so edge cards are clipped */}
+      <div className="relative z-10 px-[5%]">
+        <div ref={emblaRef} className="overflow-hidden">
+          <div className="flex -ml-4">
+            {items.map((item, i) => (
+              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[85%] sm:basis-[45%] md:basis-[32%] lg:basis-[24%] xl:basis-[20%] pl-4">
+                <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
+                  <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
 
-                    {/* Price + payment */}
-                    <div className="mt-3">
-                      <span className="text-base font-bold text-primary">{item.price}</span>
-                      <span className="text-xs text-muted-foreground ml-1.5">{item.payMethod}</span>
+                  <div className="mt-3">
+                    <span className="text-base font-bold text-primary">{item.price}</span>
+                    <span className="text-xs text-muted-foreground ml-1.5">{item.payMethod}</span>
+                  </div>
+
+                  <p className="text-sm text-foreground mt-3 leading-relaxed flex-1">{item.review}</p>
+                  <p className="text-xs text-muted-foreground mt-3">{item.date}</p>
+
+                  <div className="border-t border-border mt-4 pt-4 flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground shrink-0">
+                      {item.name.charAt(0)}
                     </div>
-
-                    {/* Review text */}
-                    <p className="text-sm text-foreground mt-3 leading-relaxed flex-1">{item.review}</p>
-
-                    {/* Date */}
-                    <p className="text-xs text-muted-foreground mt-3">{item.date}</p>
-
-                    {/* Divider */}
-                    <div className="border-t border-border mt-4 pt-4 flex items-center gap-3">
-                      {/* Avatar placeholder */}
-                      <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground shrink-0">
-                        {item.name.charAt(0)}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{item.name}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-xs text-muted-foreground">{lang === 'de' ? 'Bewertung:' : 'Rating:'}</span>
+                        <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+                        <span className="text-xs font-medium text-foreground">{item.rating}</span>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground truncate">{item.name}</p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <span className="text-xs text-muted-foreground">{lang === 'de' ? 'Bewertung:' : 'Rating:'}</span>
-                          <Star className="h-3.5 w-3.5 fill-primary text-primary" />
-                          <span className="text-xs font-medium text-foreground">{item.rating}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {lang === 'de' ? `${item.tasks} Aufträge` : `${item.tasks} tasks completed`}
-                        </p>
-                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {lang === 'de' ? `${item.tasks} Aufträge` : `${item.tasks} tasks completed`}
+                      </p>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
