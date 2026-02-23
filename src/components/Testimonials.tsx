@@ -2,8 +2,8 @@ import { useLang } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import GeometricPattern from '@/components/GeometricPattern';
-import { useEffect } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 const reviews = {
   de: [
@@ -13,6 +13,8 @@ const reviews = {
     { task: 'Logo-Design erstellen', time: 'Dienstleister gefunden in 1 Tag', price: '180 €', payMethod: 'Überweisung', review: '6 verschiedene Entwürfe, alles sehr schnell und schön gemacht. Vielen Dank!', date: '10. August 2025', name: 'Michael F.', rating: 4.9, tasks: 567 },
     { task: 'Generalreinigung 70 m²', time: 'Dienstleister gefunden in 5 Std.', price: '120 €', payMethod: 'Bar', review: 'Sehr gründlich und freundlich. Die Wohnung glänzt wieder! Alles tip-top sauber.', date: '5. November 2025', name: 'Julia R.', rating: 4.8, tasks: 203 },
     { task: 'Umzugshilfe', time: 'Dienstleister gefunden in 30 Min.', price: '250 €', payMethod: 'Überweisung', review: 'Super schnell und unkompliziert umgezogen. Sehr zu empfehlen! Alles heil angekommen.', date: '12. Dezember 2025', name: 'Stefan W.', rating: 5, tasks: 445 },
+    { task: 'Herd anschließen', time: 'Dienstleister gefunden in 2 Std.', price: '75 €', payMethod: 'Bar', review: 'Pünktlich, sauber und professionell. Gerne wieder!', date: '3. Januar 2026', name: 'Klaus B.', rating: 5, tasks: 189 },
+    { task: 'Gartenpflege', time: 'Dienstleister gefunden in 4 Std.', price: '150 €', payMethod: 'Überweisung', review: 'Garten sieht fantastisch aus. Sehr sorgfältige Arbeit!', date: '18. Januar 2026', name: 'Petra H.', rating: 4.9, tasks: 324 },
   ],
   en: [
     { task: 'Install washing machine', time: 'Provider found in 3 min.', price: '€95', payMethod: 'Bank transfer', review: 'Work was done excellently, no complaints. Great service!', date: 'Sep 28, 2025', name: 'Thomas M.', rating: 5, tasks: 312 },
@@ -21,26 +23,23 @@ const reviews = {
     { task: 'Create logo design', time: 'Provider found in 1 day', price: '€180', payMethod: 'Bank transfer', review: '6 different drafts, everything done quickly and beautifully. Thank you so much!', date: 'Aug 10, 2025', name: 'Michael F.', rating: 4.9, tasks: 567 },
     { task: 'Deep cleaning 70 m²', time: 'Provider found in 5 hrs.', price: '€120', payMethod: 'Cash', review: 'Very thorough and friendly. The apartment shines again! Everything squeaky clean.', date: 'Nov 5, 2025', name: 'Julia R.', rating: 4.8, tasks: 203 },
     { task: 'Moving help', time: 'Provider found in 30 min.', price: '€250', payMethod: 'Bank transfer', review: 'Super fast and hassle-free move. Highly recommended! Everything arrived safely.', date: 'Dec 12, 2025', name: 'Stefan W.', rating: 5, tasks: 445 },
+    { task: 'Connect stove', time: 'Provider found in 2 hrs.', price: '€75', payMethod: 'Cash', review: 'On time, clean and professional. Would use again!', date: 'Jan 3, 2026', name: 'Klaus B.', rating: 5, tasks: 189 },
+    { task: 'Garden maintenance', time: 'Provider found in 4 hrs.', price: '€150', payMethod: 'Bank transfer', review: 'Garden looks fantastic. Very careful work!', date: 'Jan 18, 2026', name: 'Petra H.', rating: 4.9, tasks: 324 },
   ],
 };
 
 export default function Testimonials() {
   const { lang, tr } = useLang();
   const items = reviews[lang];
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start', slidesToScroll: 1 });
-
-  // Auto-scroll every 3 seconds
-  useEffect(() => {
-    if (!emblaApi) return;
-    const interval = setInterval(() => emblaApi.scrollNext(), 3000);
-    return () => clearInterval(interval);
-  }, [emblaApi]);
+  const [emblaRef] = useEmblaCarousel(
+    { loop: true, align: 'center', slidesToScroll: 1, dragFree: true },
+    [Autoplay({ delay: 3000, stopOnInteraction: false, stopOnMouseEnter: true })]
+  );
 
   return (
     <section className="relative py-16 md:py-24 bg-background overflow-hidden">
       <GeometricPattern color="hsl(0 0% 80% / 0.2)" />
-      
-      {/* Title stays centered in container */}
+
       <div className="container mx-auto px-4 relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -52,12 +51,21 @@ export default function Testimonials() {
         </motion.h2>
       </div>
 
-      {/* Carousel goes full-width so edge cards are clipped */}
-      <div className="relative z-10 px-[5%]">
+      {/* Full-width carousel with fade masks on edges */}
+      <div className="relative z-10">
+        {/* Left fade mask */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 pointer-events-none"
+          style={{ background: 'linear-gradient(to right, hsl(var(--background)), transparent)' }}
+        />
+        {/* Right fade mask */}
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 pointer-events-none"
+          style={{ background: 'linear-gradient(to left, hsl(var(--background)), transparent)' }}
+        />
+
         <div ref={emblaRef} className="overflow-hidden">
-          <div className="flex -ml-4">
+          <div className="flex">
             {items.map((item, i) => (
-              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[85%] sm:basis-[45%] md:basis-[32%] lg:basis-[24%] xl:basis-[20%] pl-4">
+              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[42%] md:basis-[30%] lg:basis-[23%] xl:basis-[19%] px-2">
                 <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
                   <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
                   <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
