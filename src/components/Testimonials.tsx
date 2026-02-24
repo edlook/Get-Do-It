@@ -64,7 +64,7 @@ export default function Testimonials() {
         <div ref={emblaRef} className="overflow-hidden">
           <div className="flex gap-4 pl-4">
             {items.map((item, i) => (
-              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[44%] md:basis-[30%] lg:basis-[22%] xl:basis-[19%]">
+              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[85%] sm:basis-[48%] md:basis-[35%] lg:basis-[26%] xl:basis-[22%]">
                 <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
                   <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
                   <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
