@@ -51,8 +51,16 @@ export default function Testimonials() {
         </motion.h2>
       </div>
 
-      {/* Full-width carousel — cards clip at viewport edges */}
+      {/* Full-width carousel with edge fade */}
       <div className="relative z-10">
+        {/* Left fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 md:w-48 z-20 pointer-events-none"
+          style={{ background: 'linear-gradient(to right, hsl(var(--background)), transparent)' }}
+        />
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 z-20 pointer-events-none"
+          style={{ background: 'linear-gradient(to left, hsl(var(--background)), transparent)' }}
+        />
         <div ref={emblaRef} className="overflow-hidden">
           <div className="flex gap-4 pl-4">
             {items.map((item, i) => (
