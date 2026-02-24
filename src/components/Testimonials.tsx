@@ -32,7 +32,7 @@ export default function Testimonials() {
   const { lang, tr } = useLang();
   const items = reviews[lang];
   const [emblaRef] = useEmblaCarousel(
-    { loop: true, align: 'center', slidesToScroll: 1, dragFree: true },
+    { loop: true, align: 'start', slidesToScroll: 1, dragFree: true },
     [Autoplay({ delay: 3000, stopOnInteraction: false, stopOnMouseEnter: true })]
   );
 
@@ -51,21 +51,12 @@ export default function Testimonials() {
         </motion.h2>
       </div>
 
-      {/* Full-width carousel with fade masks on edges */}
+      {/* Full-width carousel — cards clip at viewport edges */}
       <div className="relative z-10">
-        {/* Left fade mask */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-20 pointer-events-none"
-          style={{ background: 'linear-gradient(to right, hsl(var(--background)), transparent)' }}
-        />
-        {/* Right fade mask */}
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-20 pointer-events-none"
-          style={{ background: 'linear-gradient(to left, hsl(var(--background)), transparent)' }}
-        />
-
         <div ref={emblaRef} className="overflow-hidden">
-          <div className="flex">
+          <div className="flex gap-4 pl-4">
             {items.map((item, i) => (
-              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[42%] md:basis-[30%] lg:basis-[23%] xl:basis-[19%] px-2">
+              <div key={i} className="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[44%] md:basis-[30%] lg:basis-[22%] xl:basis-[19%]">
                 <div className="rounded-xl bg-card border border-border p-5 hover:shadow-md transition-shadow h-full flex flex-col">
                   <h3 className="font-semibold text-sm text-foreground leading-snug">{item.task}</h3>
                   <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
