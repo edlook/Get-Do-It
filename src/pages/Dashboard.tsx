@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,11 +10,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { MapPin, Camera, Mail, Star, MessageSquare, Edit2, Plus, Clock, CheckCircle, Shield } from 'lucide-react';
+import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
+import blogBestProvider from '@/assets/blog-best-provider.png';
+import blogFirstTask from '@/assets/blog-first-task.png';
+import blogOnlineSafety from '@/assets/blog-online-safety.png';
 
 type Profile = Tables<'profiles'>;
 type Task = Tables<'tasks'>;
+
+const blogPosts = [
+  { slug: 'best-provider', image: blogBestProvider, de: 'Wie man den besten Dienstleister findet', en: 'How to Find the Best Provider' },
+  { slug: 'first-task', image: blogFirstTask, de: 'Tipps für die erste Auftragsstellung', en: 'Tips for Your First Task' },
+  { slug: 'online-safety', image: blogOnlineSafety, de: 'Sicherheit bei Online-Aufträgen', en: 'Safety with Online Tasks' },
+];
+
+const socialProviders = [
+  { name: 'Google', icon: 'G', color: 'bg-red-50 text-red-500' },
+  { name: 'Apple ID', icon: '', color: 'bg-gray-100 text-gray-800' },
+  { name: 'Facebook', icon: 'f', color: 'bg-blue-50 text-blue-600' },
+];
 
 export default function Dashboard() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -36,6 +51,7 @@ export default function Dashboard() {
       noRatings: 'Keine Bewertungen',
       aboutMe: 'Über mich',
       account: 'Konto',
+      insurance: 'Versicherung',
       aboutMeTitle: 'Ein wenig über mich',
       add: 'Hinzufügen',
       noRatingsTitle: 'Sie haben derzeit keine Bewertungen',
@@ -45,7 +61,7 @@ export default function Dashboard() {
       becomeProvider: 'Werden Sie Dienstleister und verdienen Sie Geld.',
       becomeProviderBtn: 'Ich möchte Dienstleister werden',
       verifiedContacts: 'Bestätigte Kontakte',
-      trustDesc: 'Erhöhen Sie das Vertrauen der Nutzer — verknüpfen Sie Ihre Konten.',
+      trustDesc: 'Erhöhen Sie das Vertrauen der Nutzer — verknüpfen Sie Ihre Konten sozialer Netzwerke mit Ihrem GetDoIt-Profil. Wir verpflichten uns, Ihre Kontakte nicht offenzulegen.',
       link: 'Verknüpfen',
       changePhoto: 'Foto ändern',
       edit: 'Bearbeiten',
@@ -61,12 +77,22 @@ export default function Dashboard() {
       budget: 'Budget',
       status: { open: 'Offen', in_progress: 'In Bearbeitung', completed: 'Erledigt', cancelled: 'Storniert' },
       profileViews: 'Profilaufrufe',
+      balance: 'Ihr Guthaben',
+      bonuses: 'Bonuspunkte',
+      history: 'Transaktionsverlauf',
+      noTransactions: 'Für diesen Zeitraum liegen keine Transaktionen vor.',
+      insuranceTitle: 'Versicherung — Schutz bei Schäden',
+      insuranceDesc: 'Aktivieren Sie die Versicherung und zahlen Sie nicht für versehentliche Schäden während der Arbeit. Bis zu 10.000 € Erstattung für Ihre Auftraggeber. Gültig für 30 Tage.',
+      blogTitle: 'Neue Artikel im Blog',
+      allArticles: 'Alle Artikel',
+      roleUpdated: 'Rolle aktualisiert',
     },
     en: {
       greeting: 'Hello',
       noRatings: 'No ratings',
       aboutMe: 'About me',
       account: 'Account',
+      insurance: 'Insurance',
       aboutMeTitle: 'A little about me',
       add: 'Add',
       noRatingsTitle: 'You have no ratings at the moment',
@@ -76,7 +102,7 @@ export default function Dashboard() {
       becomeProvider: 'Become a service provider and start earning.',
       becomeProviderBtn: 'I want to become a provider',
       verifiedContacts: 'Verified contacts',
-      trustDesc: 'Increase user trust — link your accounts.',
+      trustDesc: 'Increase user trust — link your social network accounts to your GetDoIt profile. We pledge not to disclose your contacts.',
       link: 'Link',
       changePhoto: 'Change photo',
       edit: 'Edit',
@@ -92,6 +118,15 @@ export default function Dashboard() {
       budget: 'Budget',
       status: { open: 'Open', in_progress: 'In Progress', completed: 'Completed', cancelled: 'Cancelled' },
       profileViews: 'profile views',
+      balance: 'Your balance',
+      bonuses: 'bonus points',
+      history: 'Transaction history',
+      noTransactions: 'No transactions for this period.',
+      insuranceTitle: 'Insurance — damage protection',
+      insuranceDesc: 'Activate insurance and don\'t pay for accidental damage during work. Up to €10,000 reimbursement for your clients. Valid for 30 days.',
+      blogTitle: 'New blog posts',
+      allArticles: 'All articles',
+      roleUpdated: 'Role updated',
     },
   };
   const t = tr[lang];
@@ -133,16 +168,32 @@ export default function Dashboard() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setUploading(true);
-    const ext = file.name.split('.').pop();
-    const path = `${user.id}/avatar.${ext}`;
-    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
-    if (!uploadError) {
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+      if (uploadError) {
+        toast({ title: 'Upload error', description: uploadError.message, variant: 'destructive' });
+        setUploading(false);
+        return;
+      }
       const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
       const avatarUrl = urlData.publicUrl + '?t=' + Date.now();
       await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id);
       setProfile((p) => p ? { ...p, avatar_url: avatarUrl } : p);
+    } catch (err) {
+      console.error('Avatar upload failed', err);
     }
     setUploading(false);
+  };
+
+  const handleBecomeProvider = async () => {
+    if (!user) return;
+    const { error } = await supabase.from('profiles').update({ role: 'provider' as any }).eq('id', user.id);
+    if (!error) {
+      setProfile((p) => p ? { ...p, role: 'provider' } : p);
+      toast({ title: t.roleUpdated });
+    }
   };
 
   if (authLoading || !user) return null;
@@ -160,15 +211,14 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-10 max-w-6xl">
-        {/* Profile views counter */}
+        {/* Profile views */}
         <div className="flex justify-end mb-2">
           <span className="text-sm text-muted-foreground">👁 5 {t.profileViews}</span>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left: Main content */}
+          {/* Left column */}
           <div className="flex-1 min-w-0">
-            {/* Greeting */}
             <h1 className="text-3xl font-display font-bold text-foreground mb-6">
               {t.greeting}, {displayName}!
             </h1>
@@ -192,7 +242,7 @@ export default function Dashboard() {
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-secondary rounded-lg px-4 py-2"
                 >
                   <Camera className="w-4 h-4" />
-                  {t.changePhoto}
+                  {uploading ? '...' : t.changePhoto}
                 </button>
               </div>
 
@@ -233,27 +283,24 @@ export default function Dashboard() {
             {/* Tabs */}
             <Tabs defaultValue="about" className="w-full">
               <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-auto p-0 gap-0">
-                <TabsTrigger
-                  value="about"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base"
-                >
+                <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.aboutMe}
                 </TabsTrigger>
-                <TabsTrigger
-                  value="tasks"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base"
-                >
+                <TabsTrigger value="tasks" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.myTasks}
                 </TabsTrigger>
-                <TabsTrigger
-                  value="account"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base"
-                >
+                <TabsTrigger value="account" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.account}
+                </TabsTrigger>
+                <TabsTrigger value="insurance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
+                  {t.insurance}
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3">
+                  <Settings className="w-4 h-4" />
                 </TabsTrigger>
               </TabsList>
 
-              {/* About Me Tab */}
+              {/* About Me */}
               <TabsContent value="about" className="pt-8 space-y-10">
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
@@ -263,28 +310,25 @@ export default function Dashboard() {
                     </button>
                   </h2>
                 </div>
-
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground mb-2">{t.noRatingsTitle}</h2>
                   <p className="text-muted-foreground">{t.noRatingsDesc}</p>
                 </div>
-
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground mb-2">{t.noReviewsTitle}</h2>
                   <p className="text-muted-foreground">{t.noReviewsDesc}</p>
                 </div>
-
                 {profile?.role === 'client' && (
                   <div className="bg-secondary rounded-xl p-6">
                     <p className="text-foreground mb-4">{t.becomeProvider}</p>
-                    <Button className="bg-[hsl(207,90%,60%)] hover:bg-[hsl(207,90%,50%)] text-white">
+                    <Button onClick={handleBecomeProvider} className="bg-[hsl(207,90%,60%)] hover:bg-[hsl(207,90%,50%)] text-white">
                       {t.becomeProviderBtn}
                     </Button>
                   </div>
                 )}
               </TabsContent>
 
-              {/* Tasks Tab */}
+              {/* Tasks */}
               <TabsContent value="tasks" className="pt-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-display font-bold text-foreground">{t.myTasks}</h2>
@@ -292,7 +336,6 @@ export default function Dashboard() {
                     <a href="/create-task"><Plus className="w-4 h-4 mr-1" /> {t.createTask}</a>
                   </Button>
                 </div>
-
                 {tasks.length === 0 ? (
                   <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground">
                     {t.noTasks}
@@ -323,8 +366,23 @@ export default function Dashboard() {
                 )}
               </TabsContent>
 
-              {/* Account Tab */}
+              {/* Account */}
               <TabsContent value="account" className="pt-8">
+                <h2 className="text-xl font-display font-bold text-foreground mb-4">{t.balance} 0 {t.bonuses}</h2>
+                <div className="bg-card rounded-xl border border-border p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">{t.history}</h3>
+                  <p className="text-muted-foreground">{t.noTransactions}</p>
+                </div>
+              </TabsContent>
+
+              {/* Insurance */}
+              <TabsContent value="insurance" className="pt-8">
+                <h2 className="text-xl font-display font-bold text-foreground mb-4">{t.insuranceTitle}</h2>
+                <p className="text-muted-foreground">{t.insuranceDesc}</p>
+              </TabsContent>
+
+              {/* Settings */}
+              <TabsContent value="settings" className="pt-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-muted-foreground" />
@@ -340,7 +398,7 @@ export default function Dashboard() {
           <div className="w-full lg:w-80 shrink-0 space-y-6">
             {/* Become provider CTA */}
             {profile?.role === 'client' && (
-              <div className="bg-card rounded-xl border border-border p-5 flex items-center gap-4">
+              <div className="bg-card rounded-xl border border-border p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow" onClick={handleBecomeProvider}>
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
@@ -351,7 +409,7 @@ export default function Dashboard() {
             {/* Verified contacts */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h3 className="text-lg font-display font-bold text-foreground mb-4">{t.verifiedContacts}</h3>
-              
+
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-[hsl(207,90%,60%)] flex items-center justify-center shrink-0">
                   <Mail className="w-5 h-5 text-white" />
@@ -364,17 +422,33 @@ export default function Dashboard() {
 
               <p className="text-sm text-muted-foreground mb-4">{t.trustDesc}</p>
 
-              {['Google', 'Apple ID'].map((provider) => (
-                <div key={provider} className="flex items-center justify-between py-3 border-t border-border">
+              {socialProviders.map((provider) => (
+                <div key={provider.name} className="flex items-center justify-between py-3 border-t border-border">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0 text-sm font-bold text-muted-foreground">
-                      {provider[0]}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-sm font-bold ${provider.color}`}>
+                      {provider.icon || provider.name[0]}
                     </div>
-                    <span className="text-sm text-foreground">{provider}</span>
+                    <span className="text-sm text-foreground">{provider.name}</span>
                   </div>
                   <button className="text-sm text-primary hover:underline">{t.link}</button>
                 </div>
               ))}
+            </div>
+
+            {/* Blog */}
+            <div className="bg-card rounded-xl border border-border p-6">
+              <h3 className="text-lg font-display font-bold text-foreground mb-1">{t.blogTitle}</h3>
+              <div className="space-y-4 mt-4">
+                {blogPosts.map((post) => (
+                  <Link key={post.slug} to={`/blog/${post.slug}`} className="flex gap-3 group">
+                    <img src={post.image} alt={post[lang]} className="w-16 h-12 rounded object-cover shrink-0" />
+                    <p className="text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2">{post[lang]}</p>
+                  </Link>
+                ))}
+              </div>
+              <Link to="/blog" className="flex items-center gap-1 text-sm text-primary hover:underline mt-4">
+                {t.allArticles} <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         </div>
