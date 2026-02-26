@@ -211,17 +211,15 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-10 max-w-6xl">
-        {/* Profile views */}
-        <div className="flex justify-end mb-2">
-          <span className="text-sm text-muted-foreground">👁 5 {t.profileViews}</span>
-        </div>
-
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left column */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl font-display font-bold text-foreground mb-6">
-              {t.greeting}, {displayName}!
-            </h1>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl font-display font-bold text-foreground">
+                {t.greeting}, {displayName}!
+              </h1>
+              <span className="text-sm text-muted-foreground">👁 5 {t.profileViews}</span>
+            </div>
 
             {/* Avatar + Info */}
             <div className="flex flex-col sm:flex-row gap-6 mb-8">
@@ -397,12 +395,21 @@ export default function Dashboard() {
           {/* Right Sidebar */}
           <div className="w-full lg:w-80 shrink-0 space-y-6">
             {/* Become provider CTA */}
-            {profile?.role === 'client' && (
+            {profile?.role === 'client' ? (
               <div className="bg-card rounded-xl border border-border p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow" onClick={handleBecomeProvider}>
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
                 <p className="text-sm text-foreground">{t.becomeProvider}</p>
+              </div>
+            ) : (
+              <div className="bg-green-50 rounded-xl border border-green-200 p-5 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                  <Shield className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="text-sm text-green-700 font-medium">
+                  {lang === 'de' ? '✓ Sie sind Dienstleister' : '✓ You are a provider'}
+                </p>
               </div>
             )}
 
