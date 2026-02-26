@@ -187,13 +187,8 @@ export default function Dashboard() {
     setUploading(false);
   };
 
-  const handleBecomeProvider = async () => {
-    if (!user) return;
-    const { error } = await supabase.from('profiles').update({ role: 'provider' as any }).eq('id', user.id);
-    if (!error) {
-      setProfile((p) => p ? { ...p, role: 'provider' } : p);
-      toast({ title: t.roleUpdated });
-    }
+  const handleBecomeProvider = () => {
+    navigate('/verification');
   };
 
   if (authLoading || !user) return null;
