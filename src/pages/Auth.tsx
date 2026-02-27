@@ -94,13 +94,19 @@ export default function Auth() {
             data: { name, role, city },
           },
         });
+        // If user already registered, auto-switch to login
+        if (error && error.message.toLowerCase().includes('already registered')) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
+          toast({ title: t.loginSuccess });
+          navigate('/dashboard');
+          return;
+        }
         if (error) throw error;
         toast({ title: t.registerSuccess });
-        // If session is returned immediately (auto-confirm), navigate
         if (data.session) {
           navigate('/dashboard');
         } else {
-          // Fallback: sign in immediately after signup
           const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
           if (signInError) throw signInError;
           navigate('/dashboard');
