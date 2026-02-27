@@ -49,6 +49,13 @@ export default function Dashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docVerifyOpen, setDocVerifyOpen] = useState(false);
   const [docCountry, setDocCountry] = useState('');
+  const [settingsSubTab, setSettingsSubTab] = useState('general');
+  const [editLastName, setEditLastName] = useState('');
+  const [editDob, setEditDob] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [savingPhone, setSavingPhone] = useState(false);
 
   const tr = {
     de: {
@@ -101,6 +108,36 @@ export default function Dashboard() {
       videoDesc: 'Profile mit Video erhalten mehr Aufmerksamkeit und wecken Vertrauen. Dienstleister mit Video werden 25% häufiger gewählt.',
       videoPlaceholder: 'Link zum YouTube-Video',
       videoAdd: 'Hinzufügen',
+      settingsGeneral: 'Allgemeine Einstellungen',
+      settingsNotifications: 'Benachrichtigungen',
+      settingsSubscriptions: 'Auftragsabonnements',
+      settingsSecurity: 'Sicherheit',
+      personalData: 'Persönliche Daten',
+      lastName: 'Nachname',
+      dateOfBirth: 'Geburtsdatum',
+      gender: 'Geschlecht',
+      male: 'Männlich',
+      female: 'Weiblich',
+      email: 'E-Mail',
+      emailHint: 'Ihre E-Mail ist nur für Sie sichtbar',
+      savePersonalData: 'Persönliche Daten speichern',
+      phoneNumber: 'Telefonnummer',
+      contactNumber: 'Kontaktnummer',
+      phoneHint: 'Ihre Telefonnummer ist nur für Sie sichtbar',
+      savePhone: 'Telefonnummer speichern',
+      businessStatus: 'Business-Status',
+      businessDesc: 'Business-Dienstleister können auf Aufträge von Unternehmen reagieren.',
+      activateBusiness: 'Business-Status aktivieren',
+      deleteProfile: 'Profil löschen',
+      notifSettings: 'Stellen Sie hier ein, welche Benachrichtigungen Sie erhalten möchten.',
+      subSettings: 'Verwalten Sie Ihre Auftragsabonnements und Kategorien.',
+      securitySettings: 'Verwalten Sie Ihre Sicherheitseinstellungen und Passwort.',
+      changePassword: 'Passwort ändern',
+      twoFactor: 'Zwei-Faktor-Authentifizierung',
+      twoFactorDesc: 'Aktivieren Sie die Zwei-Faktor-Authentifizierung für zusätzliche Sicherheit.',
+      activate: 'Aktivieren',
+      dataSaved: 'Daten gespeichert',
+      phoneSaved: 'Telefonnummer gespeichert',
     },
     en: {
       greeting: 'Hello',
@@ -152,6 +189,36 @@ export default function Dashboard() {
       videoDesc: 'Profiles with video get more attention and build trust. Providers with video are chosen 25% more often.',
       videoPlaceholder: 'Link to YouTube video',
       videoAdd: 'Add',
+      settingsGeneral: 'General settings',
+      settingsNotifications: 'Notifications',
+      settingsSubscriptions: 'Task subscriptions',
+      settingsSecurity: 'Security',
+      personalData: 'Personal data',
+      lastName: 'Last name',
+      dateOfBirth: 'Date of birth',
+      gender: 'Gender',
+      male: 'Male',
+      female: 'Female',
+      email: 'Email',
+      emailHint: 'Your email is only visible to you',
+      savePersonalData: 'Save personal data',
+      phoneNumber: 'Phone number',
+      contactNumber: 'Contact number',
+      phoneHint: 'Your phone number is only visible to you',
+      savePhone: 'Save phone number',
+      businessStatus: 'Business status',
+      businessDesc: 'Business providers can respond to tasks from companies.',
+      activateBusiness: 'Activate business status',
+      deleteProfile: 'Delete profile',
+      notifSettings: 'Configure which notifications you want to receive.',
+      subSettings: 'Manage your task subscriptions and categories.',
+      securitySettings: 'Manage your security settings and password.',
+      changePassword: 'Change password',
+      twoFactor: 'Two-factor authentication',
+      twoFactorDesc: 'Enable two-factor authentication for additional security.',
+      activate: 'Activate',
+      dataSaved: 'Data saved',
+      phoneSaved: 'Phone number saved',
     },
   };
   const t = tr[lang];
@@ -172,6 +239,10 @@ export default function Dashboard() {
         setProfile(profileRes.data);
         setEditName(profileRes.data.name);
         setEditCity(profileRes.data.city || '');
+        setEditLastName(profileRes.data.last_name || '');
+        setEditDob(profileRes.data.date_of_birth || '');
+        setEditPhone(profileRes.data.phone || '');
+        setEditEmail(user.email || '');
       }
       if (tasksRes.data) setTasks(tasksRes.data);
       setProfileViews(viewsRes.count ?? 0);
@@ -191,7 +262,34 @@ export default function Dashboard() {
     setSaving(false);
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSavePersonalData = async () => {
+    if (!user) return;
+    setSavingSettings(true);
+    const { error } = await supabase.from('profiles').update({
+      name: editName,
+      last_name: editLastName,
+      date_of_birth: editDob,
+      city: editCity,
+    }).eq('id', user.id);
+    if (!error) {
+      setProfile((p) => p ? { ...p, name: editName, last_name: editLastName, date_of_birth: editDob, city: editCity } : p);
+      toast({ title: t.dataSaved });
+    }
+    setSavingSettings(false);
+  };
+
+  const handleSavePhone = async () => {
+    if (!user) return;
+    setSavingPhone(true);
+    const { error } = await supabase.from('profiles').update({ phone: editPhone }).eq('id', user.id);
+    if (!error) {
+      setProfile((p) => p ? { ...p, phone: editPhone } : p);
+      toast({ title: t.phoneSaved });
+    }
+    setSavingPhone(false);
+  };
+
+
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setUploading(true);
@@ -542,13 +640,160 @@ export default function Dashboard() {
 
               {/* Settings */}
               <TabsContent value="settings" className="pt-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-foreground">{user.email}</span>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-destructive" onClick={signOut}>{t.logout}</Button>
+                {/* Sub-tabs */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {(['general', 'notifications', 'subscriptions', 'security'] as const).map((tab) => {
+                    const labels = {
+                      general: t.settingsGeneral,
+                      notifications: t.settingsNotifications,
+                      subscriptions: t.settingsSubscriptions,
+                      security: t.settingsSecurity,
+                    };
+                    return (
+                      <button
+                        key={tab}
+                        onClick={() => setSettingsSubTab(tab)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          settingsSubTab === tab
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                        }`}
+                      >
+                        {labels[tab]}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* General Settings */}
+                {settingsSubTab === 'general' && (
+                  <div className="space-y-10">
+                    {/* Personal Data */}
+                    <div>
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-6">{t.personalData}</h2>
+                      <div className="space-y-4 max-w-lg">
+                        <div>
+                          <Label>{t.name}</Label>
+                          <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <Label>{t.lastName}</Label>
+                          <Input value={editLastName} onChange={(e) => setEditLastName(e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <Label>{t.dateOfBirth}</Label>
+                          <Input value={editDob} onChange={(e) => setEditDob(e.target.value)} placeholder="01.02.1975" className="mt-1" />
+                        </div>
+                        <div>
+                          <Label>{t.gender}</Label>
+                          <div className="flex items-center gap-6 mt-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="radio" name="gender" value="male" className="accent-primary w-4 h-4" />
+                              <span className="text-sm text-foreground">{t.male}</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="radio" name="gender" value="female" className="accent-primary w-4 h-4" />
+                              <span className="text-sm text-foreground">{t.female}</span>
+                            </label>
+                          </div>
+                        </div>
+                        <div>
+                          <Label>{t.city}</Label>
+                          <Input value={editCity} onChange={(e) => setEditCity(e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <Label>{t.email}</Label>
+                          <Input value={editEmail} disabled className="mt-1 bg-muted" />
+                          <p className="text-xs text-muted-foreground mt-1">{t.emailHint}</p>
+                        </div>
+                        <Button onClick={handleSavePersonalData} disabled={savingSettings} className="mt-2">
+                          {savingSettings ? '...' : t.savePersonalData}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Phone */}
+                    <div>
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-6">{t.phoneNumber}</h2>
+                      <div className="space-y-4 max-w-lg">
+                        <div>
+                          <Label>{t.contactNumber}</Label>
+                          <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} placeholder="+49 172 1234567" className="mt-1" />
+                          <p className="text-xs text-muted-foreground mt-1">{t.phoneHint}</p>
+                        </div>
+                        <Button onClick={handleSavePhone} disabled={savingPhone}>
+                          {savingPhone ? '...' : t.savePhone}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Business Status */}
+                    <div>
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-2">{t.businessStatus}</h2>
+                      <p className="text-muted-foreground mb-4">{t.businessDesc}</p>
+                      <Button>{t.activateBusiness}</Button>
+                    </div>
+
+                    <div className="border-t border-border" />
+
+                    {/* Delete Profile */}
+                    <div>
+                      <Button variant="outline" className="text-muted-foreground">{t.deleteProfile}</Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notifications */}
+                {settingsSubTab === 'notifications' && (
+                  <div>
+                    <p className="text-muted-foreground">{t.notifSettings}</p>
+                    <div className="mt-6 space-y-4">
+                      {['Email', 'Push', 'SMS'].map((channel) => (
+                        <div key={channel} className="flex items-center justify-between py-3 border-b border-border">
+                          <span className="text-foreground">{channel}</span>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" defaultChecked className="sr-only peer" />
+                            <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-background after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Subscriptions */}
+                {settingsSubTab === 'subscriptions' && (
+                  <div>
+                    <p className="text-muted-foreground">{t.subSettings}</p>
+                  </div>
+                )}
+
+                {/* Security */}
+                {settingsSubTab === 'security' && (
+                  <div className="space-y-8">
+                    <p className="text-muted-foreground">{t.securitySettings}</p>
+                    <div className="flex items-center justify-between py-4 border-b border-border">
+                      <div>
+                        <p className="font-medium text-foreground">{t.changePassword}</p>
+                      </div>
+                      <Button variant="outline" size="sm">{t.changePassword}</Button>
+                    </div>
+                    <div className="flex items-center justify-between py-4 border-b border-border">
+                      <div>
+                        <p className="font-medium text-foreground">{t.twoFactor}</p>
+                        <p className="text-sm text-muted-foreground">{t.twoFactorDesc}</p>
+                      </div>
+                      <Button variant="outline" size="sm">{t.activate}</Button>
+                    </div>
+                    <div className="mt-6">
+                      <Button variant="ghost" size="sm" className="text-destructive" onClick={signOut}>{t.logout}</Button>
+                    </div>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
