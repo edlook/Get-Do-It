@@ -86,7 +86,7 @@ export default function Auth() {
         toast({ title: t.loginSuccess });
         navigate('/dashboard');
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { error, data } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -96,7 +96,15 @@ export default function Auth() {
         });
         if (error) throw error;
         toast({ title: t.registerSuccess });
-        navigate('/dashboard');
+        // If session is returned immediately (auto-confirm), navigate
+        if (data.session) {
+          navigate('/dashboard');
+        } else {
+          // Fallback: sign in immediately after signup
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
+          navigate('/dashboard');
+        }
       }
     } catch (err: any) {
       toast({ title: t.error, description: err.message, variant: 'destructive' });
