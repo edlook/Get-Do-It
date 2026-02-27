@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLang } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { MapPin, Calendar, MessageSquare, Euro, Search, Check } from 'lucide-react';
 import Header from '@/components/Header';
@@ -38,6 +39,8 @@ function timeAgo(dateStr: string, lang: string) {
 
 export default function FindTasks() {
   const { lang, tr } = useLang();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -150,7 +153,18 @@ export default function FindTasks() {
                         </div>
                         <div className="shrink-0 flex flex-col items-end gap-2">
                           <span className="text-xs text-muted-foreground whitespace-nowrap">{timeAgo(task.created_at, lang)}</span>
-                          <Button size="sm" variant="outline" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground whitespace-nowrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground whitespace-nowrap"
+                            onClick={() => {
+                              if (!user) {
+                                navigate('/auth');
+                              } else {
+                                navigate(`/tasks/${task.id}/respond`);
+                              }
+                            }}
+                          >
                             {tr.findTasks.respond}
                           </Button>
                         </div>
