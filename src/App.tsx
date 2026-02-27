@@ -18,6 +18,7 @@ import BlogPost from "./pages/BlogPost";
 import Verification from "./pages/Verification";
 import BecomeProvider from "./pages/BecomeProvider";
 import DocumentVerification from "./pages/DocumentVerification";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/become-provider" element={<BecomeProvider />} />
               <Route path="/verification" element={<Verification />} />
               <Route path="/help/document-verification" element={<DocumentVerification />} />
+              <Route path="/messages" element={<Messages />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
