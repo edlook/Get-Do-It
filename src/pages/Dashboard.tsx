@@ -330,26 +330,45 @@ export default function Dashboard() {
                         </Tooltip>
 
                         {/* Completed tasks badge */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="w-14 h-14 cursor-help relative">
-                              <svg viewBox="0 0 60 60" className="w-full h-full">
-                                <path
-                                  d="M30 4 L52 14 L52 30 Q52 48 30 56 Q8 48 8 30 L8 14 Z"
-                                  fill="none"
-                                  stroke="hsl(var(--muted-foreground) / 0.3)"
-                                  strokeWidth="2"
-                                  strokeDasharray="4 3"
-                                />
-                                <text x="30" y="35" textAnchor="middle" className="fill-muted-foreground/40 text-[16px]" style={{ filter: 'grayscale(1)' }}>👍</text>
-                              </svg>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] text-center p-3">
-                            <p className="font-semibold mb-1">{lang === 'de' ? 'Abgeschlossene Aufträge' : 'Completed Tasks Badge'}</p>
-                            <p className="text-xs">{lang === 'de' ? 'Wird vergeben bei 50, 100, 200, 300, 400, 500 abgeschlossenen Aufträgen.' : 'Awarded at 50, 100, 200, 300, 400, 500 completed tasks.'}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        {(() => {
+                          const completedCount = tasks.filter(t2 => t2.status === 'completed').length;
+                          const isActive = completedCount >= 50;
+                          const badgeColor = completedCount >= 150
+                            ? { stroke: 'hsl(45, 93%, 47%)', fill: 'hsl(45, 93%, 47%, 0.1)', glow: '0 0 12px hsl(45, 93%, 47%, 0.5)' } // gold
+                            : completedCount >= 100
+                            ? { stroke: 'hsl(262, 83%, 58%)', fill: 'hsl(262, 83%, 58%, 0.1)', glow: '0 0 12px hsl(262, 83%, 58%, 0.5)' } // purple
+                            : completedCount >= 50
+                            ? { stroke: 'hsl(142, 71%, 45%)', fill: 'hsl(142, 71%, 45%, 0.1)', glow: '0 0 12px hsl(142, 71%, 45%, 0.5)' } // green
+                            : null;
+                          const levelLabel = completedCount >= 150 ? '150+' : completedCount >= 100 ? '100+' : completedCount >= 50 ? '50+' : '';
+                          return (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="w-14 h-14 cursor-help relative transition-all duration-300" style={isActive ? { filter: 'none' } : {}}>
+                                  <svg viewBox="0 0 60 60" className="w-full h-full" style={isActive ? { filter: `drop-shadow(${badgeColor!.glow})` } : {}}>
+                                    <path
+                                      d="M30 4 L52 14 L52 30 Q52 48 30 56 Q8 48 8 30 L8 14 Z"
+                                      fill={isActive ? badgeColor!.fill : 'none'}
+                                      stroke={isActive ? badgeColor!.stroke : 'hsl(var(--muted-foreground) / 0.3)'}
+                                      strokeWidth="2"
+                                      strokeDasharray={isActive ? 'none' : '4 3'}
+                                    />
+                                    <text x="30" y="35" textAnchor="middle" className={isActive ? 'text-[16px]' : 'fill-muted-foreground/40 text-[16px]'} style={isActive ? {} : { filter: 'grayscale(1)' }}>👍</text>
+                                  </svg>
+                                  {isActive && (
+                                    <span className="absolute -bottom-1 -right-1 text-[9px] font-bold rounded-full px-1" style={{ background: badgeColor!.stroke, color: 'white' }}>{levelLabel}</span>
+                                  )}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-[220px] text-center p-3">
+                                <p className="font-semibold mb-1">{lang === 'de' ? 'Abgeschlossene Aufträge' : 'Completed Tasks Badge'}</p>
+                                <p className="text-xs">{lang === 'de'
+                                  ? `Wird vergeben bei 50, 100, 150 abgeschlossenen Aufträgen. Aktuell: ${completedCount}`
+                                  : `Awarded at 50, 100, 150 completed tasks. Current: ${completedCount}`}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })()}
 
                         {/* Success rate badge */}
                         <Tooltip>
