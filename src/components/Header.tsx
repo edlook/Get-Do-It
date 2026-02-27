@@ -1,5 +1,6 @@
 import { useLang } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Menu, X, Bell, MessageSquare, Wallet, User, Settings, CreditCard, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -13,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 export default function Header() {
   const { lang, setLang, tr } = useLang();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [walletOpen, setWalletOpen] = useState(false);
   const [walletAmount, setWalletAmount] = useState('10');
@@ -179,25 +181,17 @@ export default function Header() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem asChild>
-                      <a href="/dashboard" className="flex items-center gap-2 cursor-pointer">
-                        <User className="w-4 h-4" /> {lt.profile}
-                      </a>
+                    <DropdownMenuItem onClick={() => navigate('/dashboard?tab=about')} className="flex items-center gap-2 cursor-pointer">
+                      <User className="w-4 h-4" /> {lt.profile}
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a href="/dashboard?tab=tariffs" className="flex items-center gap-2 cursor-pointer">
-                        <CreditCard className="w-4 h-4" /> {lt.tariffs}
-                      </a>
+                    <DropdownMenuItem onClick={() => navigate('/dashboard?tab=tariffs')} className="flex items-center gap-2 cursor-pointer">
+                      <CreditCard className="w-4 h-4" /> {lt.tariffs}
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a href="/dashboard?tab=settings&sub=subscriptions" className="flex items-center gap-2 cursor-pointer">
-                        <Bell className="w-4 h-4" /> {lt.taskSub}
-                      </a>
+                    <DropdownMenuItem onClick={() => navigate('/dashboard?tab=settings&sub=subscriptions')} className="flex items-center gap-2 cursor-pointer">
+                      <Bell className="w-4 h-4" /> {lt.taskSub}
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a href="/dashboard?tab=settings" className="flex items-center gap-2 cursor-pointer">
-                        <Settings className="w-4 h-4" /> {lt.settings}
-                      </a>
+                    <DropdownMenuItem onClick={() => navigate('/dashboard?tab=settings')} className="flex items-center gap-2 cursor-pointer">
+                      <Settings className="w-4 h-4" /> {lt.settings}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer text-destructive">

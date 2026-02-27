@@ -56,6 +56,11 @@ export default function Dashboard() {
   const [tariffOpen, setTariffOpen] = useState(false);
   const [settingsSubTab, setSettingsSubTab] = useState(searchParams.get('sub') || 'general');
   const activeTab = searchParams.get('tab') || 'about';
+
+  useEffect(() => {
+    const sub = searchParams.get('sub');
+    if (sub) setSettingsSubTab(sub);
+  }, [searchParams]);
   const [editLastName, setEditLastName] = useState('');
   const [editDob, setEditDob] = useState('');
   const [editPhone, setEditPhone] = useState('');
