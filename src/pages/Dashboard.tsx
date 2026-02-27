@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [editCity, setEditCity] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [profileViews, setProfileViews] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const tr = {
@@ -138,9 +139,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [profileRes, tasksRes] = await Promise.all([
+      const [profileRes, tasksRes, viewsRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('tasks').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('profile_id', user.id),
       ]);
       if (profileRes.data) {
         setProfile(profileRes.data);
@@ -148,6 +150,7 @@ export default function Dashboard() {
         setEditCity(profileRes.data.city || '');
       }
       if (tasksRes.data) setTasks(tasksRes.data);
+      setProfileViews(viewsRes.count ?? 0);
     };
     fetchData();
   }, [user]);
@@ -213,7 +216,7 @@ export default function Dashboard() {
               <h1 className="text-3xl font-display font-bold text-foreground">
                 {t.greeting}, {displayName}!
               </h1>
-              <span className="text-sm text-muted-foreground">👁 5 {t.profileViews}</span>
+              <span className="text-sm text-muted-foreground">👁 {profileViews} {t.profileViews}</span>
             </div>
 
             {/* Avatar + Info */}
