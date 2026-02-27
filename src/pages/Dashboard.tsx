@@ -87,6 +87,16 @@ export default function Dashboard() {
       blogTitle: 'Neue Artikel im Blog',
       allArticles: 'Alle Artikel',
       roleUpdated: 'Rolle aktualisiert',
+      years: 'Jahre',
+      experienceYears: 'Berufserfahrung',
+      experienceWarning: 'Auftraggeber wissen nichts über Sie. Fügen Sie Informationen über Ihre Erfahrung hinzu.',
+      portfolioTitle: 'Beispiele Ihrer Arbeit',
+      portfolioDesc: 'Wenn Sie Beispiele Ihrer ausgeführten Arbeiten haben, fügen Sie diese unbedingt hinzu. Das zeigt Sie im besten Licht vor den Auftraggebern und schafft mehr Vertrauen.',
+      createAlbum: 'Fotoalbum erstellen',
+      videoTitle: 'Fügen Sie ein Video über sich hinzu',
+      videoDesc: 'Profile mit Video erhalten mehr Aufmerksamkeit und wecken Vertrauen. Dienstleister mit Video werden 25% häufiger gewählt.',
+      videoPlaceholder: 'Link zum YouTube-Video',
+      videoAdd: 'Hinzufügen',
     },
     en: {
       greeting: 'Hello',
@@ -128,6 +138,16 @@ export default function Dashboard() {
       blogTitle: 'New blog posts',
       allArticles: 'All articles',
       roleUpdated: 'Role updated',
+      years: 'years',
+      experienceYears: 'Experience',
+      experienceWarning: 'Clients don\'t know anything about you. Add information about your experience.',
+      portfolioTitle: 'Work examples',
+      portfolioDesc: 'If you have examples of your completed work, be sure to attach them. This will show you in the best light to task creators and build more trust.',
+      createAlbum: 'Create photo album',
+      videoTitle: 'Add a video about yourself',
+      videoDesc: 'Profiles with video get more attention and build trust. Providers with video are chosen 25% more often.',
+      videoPlaceholder: 'Link to YouTube video',
+      videoAdd: 'Add',
     },
   };
   const t = tr[lang];
@@ -205,6 +225,19 @@ export default function Dashboard() {
 
   const displayName = profile?.name || user.email?.split('@')[0] || '';
 
+  // Calculate age from date_of_birth
+  const calculateAge = (dob: string | null) => {
+    if (!dob) return null;
+    const parts = dob.includes('.') ? dob.split('.').reverse() : dob.split('-');
+    const birth = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    if (isNaN(birth.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    return age;
+  };
+  const userAge = calculateAge(profile?.date_of_birth ?? null);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -260,7 +293,8 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <>
-                    <p className="text-base text-muted-foreground">
+                    <p className="text-base text-muted-foreground flex items-center gap-2 flex-wrap">
+                      {userAge && <span>{userAge} {t.years}</span>}
                       {profile?.city && (
                         <span className="inline-flex items-center gap-1">
                           <MapPin className="w-4 h-4 text-green-500" /> {profile.city}
@@ -268,7 +302,13 @@ export default function Dashboard() {
                       )}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{t.noRatings}</p>
-                    <button onClick={() => setEditing(true)} className="text-sm text-primary hover:underline mt-2 self-start flex items-center gap-1">
+                    {/* Stats circles */}
+                    <div className="flex items-center gap-4 mt-3">
+                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-xs text-muted-foreground font-semibold">ТОП</div>
+                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-muted-foreground">👍</div>
+                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-xs text-muted-foreground font-semibold">%</div>
+                    </div>
+                    <button onClick={() => setEditing(true)} className="text-sm text-primary hover:underline mt-3 self-start flex items-center gap-1">
                       <Edit2 className="w-3.5 h-3.5" /> {t.edit}
                     </button>
                   </>
@@ -298,6 +338,7 @@ export default function Dashboard() {
 
               {/* About Me */}
               <TabsContent value="about" className="pt-8 space-y-10">
+                {/* About me + experience */}
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
                     {t.aboutMeTitle}
@@ -305,19 +346,53 @@ export default function Dashboard() {
                       <Edit2 className="w-3.5 h-3.5" /> {t.add}
                     </button>
                   </h2>
+                  {profile?.experience_years && (
+                    <p className="text-foreground mt-2">
+                      {t.experienceYears} {profile.experience_years} {t.years}
+                    </p>
+                  )}
+                  {profile?.about ? (
+                    <p className="text-muted-foreground mt-1">{profile.about}</p>
+                  ) : (
+                    <p className="text-destructive mt-2 text-sm">{t.experienceWarning}</p>
+                  )}
                 </div>
+
+                {/* Portfolio */}
+                <div>
+                  <h2 className="text-xl font-display font-bold text-foreground mb-2">{t.portfolioTitle}</h2>
+                  <p className="text-muted-foreground mb-4">{t.portfolioDesc}</p>
+                  <Button variant="default" className="gap-2">
+                    <Camera className="w-4 h-4" /> {t.createAlbum}
+                  </Button>
+                </div>
+
+                {/* Video */}
+                <div className="bg-card rounded-xl border border-border p-6">
+                  <h3 className="text-lg font-display font-bold text-foreground mb-2">{t.videoTitle}</h3>
+                  <p className="text-muted-foreground mb-4 text-sm">{t.videoDesc}</p>
+                  <div className="flex gap-2">
+                    <Input placeholder={t.videoPlaceholder} className="flex-1" />
+                    <Button variant="outline">{t.videoAdd}</Button>
+                  </div>
+                </div>
+
+                {/* Ratings */}
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground mb-2">{t.noRatingsTitle}</h2>
                   <p className="text-muted-foreground">{t.noRatingsDesc}</p>
                 </div>
+
+                {/* Reviews */}
                 <div>
                   <h2 className="text-xl font-display font-bold text-foreground mb-2">{t.noReviewsTitle}</h2>
                   <p className="text-muted-foreground">{t.noReviewsDesc}</p>
                 </div>
+
                 {profile?.role === 'client' && (
                   <div className="bg-secondary rounded-xl p-6">
                     <p className="text-foreground mb-4">{t.becomeProvider}</p>
-                    <Button onClick={handleBecomeProvider} className="bg-[hsl(207,90%,60%)] hover:bg-[hsl(207,90%,50%)] text-white">
+                    <Button onClick={handleBecomeProvider} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                       {t.becomeProviderBtn}
                     </Button>
                   </div>
