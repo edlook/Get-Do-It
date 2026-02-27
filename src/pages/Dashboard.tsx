@@ -392,39 +392,68 @@ export default function Dashboard() {
 
           {/* Right Sidebar */}
           <div className="w-full lg:w-80 shrink-0 space-y-6">
-            {/* Become provider CTA */}
-            {profile?.role === 'client' ? (
-              <div className="bg-card rounded-xl border border-border p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow" onClick={handleBecomeProvider}>
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                  <Shield className="w-6 h-6 text-green-600" />
-                </div>
-                <p className="text-sm text-foreground">{t.becomeProvider}</p>
-              </div>
-            ) : (
-              <div className="bg-green-50 rounded-xl border border-green-200 p-5 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                  <Shield className="w-6 h-6 text-green-600" />
-                </div>
-                <p className="text-sm text-green-700 font-medium">
-                  {lang === 'de' ? '✓ Sie sind Dienstleister' : '✓ You are a provider'}
-                </p>
-              </div>
-            )}
-
-            {/* Verified contacts */}
+            {/* Provider profile card */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h3 className="text-lg font-display font-bold text-foreground mb-4">{t.verifiedContacts}</h3>
+              {profile?.role === 'provider' ? (
+                <>
+                  <h3 className="text-lg font-display font-bold text-foreground mb-1">
+                    {lang === 'de' ? 'Dienstleister' : 'Provider'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-5">
+                    {lang === 'de' ? 'auf GetDoIt seit' : 'on GetDoIt since'} {new Date(profile.created_at).toLocaleDateString(lang === 'de' ? 'de-DE' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
 
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-[hsl(207,90%,60%)] flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground">Email</p>
-                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                </div>
-              </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {lang === 'de'
+                      ? 'Um das Abzeichen «Dokumente bestätigt» zu erhalten, senden Sie Ihren Ausweis und ein Selfie mit Dokument zur Prüfung.'
+                      : 'To get the "Documents verified" badge, submit your ID and a selfie with your document for review.'}
+                  </p>
 
+                  {/* Documents */}
+                  <div className="flex items-center gap-3 py-3 border-t border-border">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <Shield className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{lang === 'de' ? 'Dokumente' : 'Documents'}</p>
+                      <button className="text-sm text-primary hover:underline">{lang === 'de' ? 'Prüfung starten' : 'Start verification'}</button>
+                    </div>
+                  </div>
+
+                  {/* Phone */}
+                  <div className="flex items-center gap-3 py-3 border-t border-border">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                      <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{lang === 'de' ? 'Telefon' : 'Phone'}</p>
+                      <p className="text-sm text-muted-foreground">{profile.phone || (lang === 'de' ? 'Nicht angegeben' : 'Not provided')}</p>
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex items-center gap-3 py-3 border-t border-border">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                      <Mail className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground">Email</p>
+                      <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow" onClick={handleBecomeProvider}>
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                    <Shield className="w-6 h-6 text-green-600" />
+                  </div>
+                  <p className="text-sm text-foreground">{t.becomeProvider}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Social links */}
+            <div className="bg-card rounded-xl border border-border p-6">
               <p className="text-sm text-muted-foreground mb-4">{t.trustDesc}</p>
 
               {socialProviders.map((provider) => (
