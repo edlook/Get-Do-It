@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight, X, Upload, CreditCard, Check } from 'lucide-react';
+import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight, X, Upload, CreditCard, Check, Wallet } from 'lucide-react';
 import { Dialog, DialogContent, DialogClose, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Tables } from '@/integrations/supabase/types';
@@ -54,6 +54,11 @@ export default function Dashboard() {
   const [docStep, setDocStep] = useState(0); // 0=intro, 1=upload, 2=payment, 3=done
   const [docFiles, setDocFiles] = useState<File[]>([]);
   const [tariffOpen, setTariffOpen] = useState(false);
+  const [tariffType, setTariffType] = useState<'unlimited' | 'basic' | null>(null);
+  const [tariffStep, setTariffStep] = useState(0); // 0=categories, 1=pricing, 2=balance
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedTier, setSelectedTier] = useState<'25' | '50' | '100'>('50');
+  const [selectedUnlimitedDays, setSelectedUnlimitedDays] = useState<'15' | '30' | '90'>('30');
   const [settingsSubTab, setSettingsSubTab] = useState(searchParams.get('sub') || 'general');
   const activeTab = searchParams.get('tab') || 'about';
 
@@ -651,41 +656,139 @@ export default function Dashboard() {
 
               {/* Tariffs */}
               <TabsContent value="tariffs" className="pt-8">
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
-                  {lang === 'de' ? 'Tarifauswahl' : 'Choose a plan'}
-                </h2>
-                <div className="grid sm:grid-cols-2 gap-6 max-w-2xl">
-                  {/* Unlimited */}
-                  <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
-                    <h3 className="text-xl font-bold text-foreground flex items-center justify-center gap-2">
-                      {lang === 'de' ? 'Unbegrenzt' : 'Unlimited'}
-                      <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-bold">-50%</span>
-                    </h3>
-                    <p className="text-muted-foreground mt-3 mb-5">
-                      {lang === 'de'
-                        ? 'Unbegrenzte Anzahl an Bewerbungen für 15, 30 oder 90 Tage.'
-                        : 'Unlimited responses for 15, 30 or 90 days.'}
-                    </p>
-                    <Button className="w-full" onClick={() => setTariffOpen(true)}>
-                      {lang === 'de' ? 'Mit 50% Rabatt aktivieren' : 'Activate with 50% off'}
-                    </Button>
-                  </div>
+                {!tariffType ? (
+                  <>
+                    <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                      {lang === 'de' ? 'Tarifauswahl' : 'Choose a plan'}
+                    </h2>
+                    <div className="grid sm:grid-cols-2 gap-6 max-w-2xl">
+                      <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+                        <h3 className="text-xl font-bold text-foreground flex items-center justify-center gap-2">
+                          {lang === 'de' ? 'Unbegrenzt' : 'Unlimited'}
+                          <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-bold">-50%</span>
+                        </h3>
+                        <p className="text-muted-foreground mt-3 mb-5">
+                          {lang === 'de'
+                            ? 'Unbegrenzte Anzahl an Bewerbungen für 15, 30 oder 90 Tage.'
+                            : 'Unlimited responses for 15, 30 or 90 days.'}
+                        </p>
+                        <Button className="w-full" onClick={() => { setTariffType('unlimited'); setTariffStep(0); setSelectedCategories([]); }}>
+                          {lang === 'de' ? 'Mit 50% Rabatt aktivieren' : 'Activate with 50% off'}
+                        </Button>
+                      </div>
+                      <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+                        <h3 className="text-xl font-bold text-foreground">
+                          {lang === 'de' ? 'Basis' : 'Basic'}
+                        </h3>
+                        <p className="text-muted-foreground mt-3 mb-5">
+                          {lang === 'de'
+                            ? 'Festgelegte Anzahl an Bewerbungen: 25, 50 oder 100 pro Monat.'
+                            : 'Fixed number of responses: 25, 50 or 100 per month.'}
+                        </p>
+                        <Button variant="outline" className="w-full" onClick={() => { setTariffType('basic'); setTariffStep(0); setSelectedCategories([]); }}>
+                          {lang === 'de' ? 'Aktivieren' : 'Activate'}
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Category selection */}
+                    {(() => {
+                      const categories = [
+                        { id: 'moving', de: 'Umzug & Transport', en: 'Moving & Transport', price: 29 },
+                        { id: 'cleaning', de: 'Reinigung', en: 'Cleaning', price: 25 },
+                        { id: 'repair', de: 'Reparatur & Handwerk', en: 'Repair & Crafts', price: 35 },
+                        { id: 'it', de: 'IT & Webentwicklung', en: 'IT & Web Development', price: 49 },
+                        { id: 'design', de: 'Design', en: 'Design', price: 39 },
+                        { id: 'assistant', de: 'Virtueller Assistent', en: 'Virtual Assistant', price: 29 },
+                        { id: 'beauty', de: 'Schönheit & Gesundheit', en: 'Beauty & Health', price: 32 },
+                        { id: 'tutoring', de: 'Nachhilfe & Unterricht', en: 'Tutoring & Lessons', price: 35 },
+                        { id: 'events', de: 'Events & Veranstaltungen', en: 'Events', price: 39 },
+                      ];
+                      const totalPrice = selectedCategories.reduce((sum, catId) => {
+                        const cat = categories.find(c => c.id === catId);
+                        return sum + (cat?.price ?? 0);
+                      }, 0);
+                      const tierMultiplier = tariffType === 'basic'
+                        ? (selectedTier === '25' ? 1 : selectedTier === '50' ? 1.78 : 3.12)
+                        : (selectedUnlimitedDays === '15' ? 1 : selectedUnlimitedDays === '30' ? 1.7 : selectedUnlimitedDays === '90' ? 3.4 : 1);
+                      const finalPrice = Math.round(totalPrice * tierMultiplier);
 
-                  {/* Basic */}
-                  <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
-                    <h3 className="text-xl font-bold text-foreground">
-                      {lang === 'de' ? 'Basis' : 'Basic'}
-                    </h3>
-                    <p className="text-muted-foreground mt-3 mb-5">
-                      {lang === 'de'
-                        ? 'Festgelegte Anzahl an Bewerbungen: 25, 50 oder 100 pro Monat.'
-                        : 'Fixed number of responses: 25, 50 or 100 per month.'}
-                    </p>
-                    <Button variant="outline" className="w-full" onClick={() => setTariffOpen(true)}>
-                      {lang === 'de' ? 'Aktivieren' : 'Activate'}
-                    </Button>
-                  </div>
-                </div>
+                      return (
+                        <div className="relative">
+                          <div className="flex items-center gap-4 mb-6">
+                            <button onClick={() => { setTariffType(null); setTariffStep(0); }} className="text-primary hover:underline text-sm flex items-center gap-1">
+                              ← {lang === 'de' ? 'Zurück' : 'Back'}
+                            </button>
+                            <h2 className="text-2xl font-display font-bold text-foreground">
+                              {tariffType === 'unlimited'
+                                ? (lang === 'de' ? 'Unbegrenzter Tarif' : 'Unlimited Plan')
+                                : (lang === 'de' ? 'Basis-Tarif' : 'Basic Plan')}
+                            </h2>
+                          </div>
+
+                          <p className="text-muted-foreground mb-6">
+                            {tariffType === 'basic'
+                              ? (lang === 'de'
+                                ? 'Wirtschaftliche Variante mit festgelegter Anzahl an Bewerbungen auf 30 Tage. Geeignet für Nebenverdienst. Wählen Sie eine oder mehrere Kategorien aus der Liste unten.'
+                                : 'Economical option with a fixed number of responses for 30 days. Suitable for side income. Select one or more categories from the list below.')
+                              : (lang === 'de'
+                                ? 'Unbegrenzte Bewerbungen in den ausgewählten Kategorien. Wählen Sie eine oder mehrere Kategorien.'
+                                : 'Unlimited responses in selected categories. Choose one or more categories.')}
+                          </p>
+
+                          <div className="mb-2 text-sm text-muted-foreground font-medium">
+                            {lang === 'de' ? 'Kategorieliste' : 'Category list'}
+                          </div>
+                          <div className="border border-border rounded-xl overflow-hidden mb-24">
+                            {categories.map((cat) => {
+                              const isSelected = selectedCategories.includes(cat.id);
+                              return (
+                                <label
+                                  key={cat.id}
+                                  className={`flex items-center justify-between px-5 py-4 cursor-pointer border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/50'}`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
+                                      {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                    </div>
+                                    <span className="font-medium text-foreground">{cat[lang]}</span>
+                                  </div>
+                                  <span className="text-muted-foreground text-sm">{lang === 'de' ? 'ab' : 'from'} {cat.price} €</span>
+                                  <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={isSelected}
+                                    onChange={() => {
+                                      setSelectedCategories(prev =>
+                                        isSelected ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
+                                      );
+                                    }}
+                                  />
+                                </label>
+                              );
+                            })}
+                          </div>
+
+                          {/* Sticky bottom bar */}
+                          {selectedCategories.length > 0 && (
+                            <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-4 flex items-center justify-between z-40 shadow-lg">
+                              <p className="text-sm text-foreground">
+                                {lang === 'de'
+                                  ? `${selectedCategories.length} Kategorie(n) ausgewählt, ab ${totalPrice} €`
+                                  : `${selectedCategories.length} category(ies) selected, from ${totalPrice} €`}
+                              </p>
+                              <Button onClick={() => { setTariffOpen(true); setTariffStep(1); }}>
+                                {lang === 'de' ? 'Weiter' : 'Next'}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </>
+                )}
               </TabsContent>
 
               <TabsContent value="insurance" className="pt-8">
@@ -1099,46 +1202,144 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Tariff selection dialog */}
-      <Dialog open={tariffOpen} onOpenChange={setTariffOpen}>
-        <DialogContent className="sm:max-w-md p-8">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-display font-bold text-foreground text-center">
-              {lang === 'de' ? 'Tarifauswahl' : 'Choose a plan'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            {/* Unlimited */}
-            <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
-              <h3 className="text-lg font-bold text-foreground flex items-center justify-center gap-2">
-                {lang === 'de' ? 'Unbegrenzt' : 'Unlimited'}
-                <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-bold">-50%</span>
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2 mb-4">
-                {lang === 'de'
-                  ? 'Unbegrenzte Anzahl an Bewerbungen für 15, 30 oder 90 Tage.'
-                  : 'Unlimited responses for 15, 30 or 90 days.'}
-              </p>
-              <Button className="w-full" onClick={() => { setTariffOpen(false); toast({ title: lang === 'de' ? 'Tarif aktiviert' : 'Plan activated' }); }}>
-                {lang === 'de' ? 'Mit 50% Rabatt aktivieren' : 'Activate with 50% off'}
-              </Button>
-            </div>
+      {/* Tariff pricing dialog */}
+      <Dialog open={tariffOpen} onOpenChange={(open) => { setTariffOpen(open); if (!open) setTariffStep(1); }}>
+        <DialogContent className="sm:max-w-lg p-8">
+          {tariffStep === 1 && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-display font-bold text-foreground text-center">
+                  {lang === 'de' ? 'Tarifbedingungen wählen' : 'Choose plan terms'}
+                </DialogTitle>
+              </DialogHeader>
+              {tariffType === 'basic' ? (
+                <div className="mt-4">
+                  <div className="grid grid-cols-3 gap-0 border border-border rounded-xl overflow-hidden">
+                    {(['25', '50', '100'] as const).map((tier) => {
+                      const prices = { '25': 49, '50': 89, '100': 149 };
+                      const perResponse = { '25': '1,96', '50': '1,78', '100': '1,49' };
+                      const isSelected = selectedTier === tier;
+                      const isBest = tier === '50';
+                      return (
+                        <button
+                          key={tier}
+                          onClick={() => setSelectedTier(tier)}
+                          className={`py-5 px-3 text-center transition-all relative ${isSelected ? 'bg-accent/15 border-2 border-accent rounded-xl z-10 shadow-md -mx-px' : 'bg-card'}`}
+                        >
+                          <p className="text-sm font-medium text-foreground mb-3">{tier} {lang === 'de' ? 'Bewerbungen' : 'responses'}</p>
+                          {isBest && (
+                            <p className="text-xs font-bold text-accent uppercase tracking-wider mb-1">
+                              {lang === 'de' ? 'BESTSELLER' : 'BEST SELLER'}
+                            </p>
+                          )}
+                          <p className="text-2xl font-bold text-foreground">{prices[tier]} €</p>
+                          <p className="text-xs text-muted-foreground mt-1">{perResponse[tier]} €/{lang === 'de' ? 'Bewerbung' : 'response'}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    className="w-full mt-6"
+                    size="lg"
+                    onClick={() => {
+                      const prices = { '25': 49, '50': 89, '100': 149 };
+                      const price = prices[selectedTier];
+                      if ((profile?.balance ?? 0) < price) {
+                        setTariffStep(2);
+                      } else {
+                        setTariffOpen(false);
+                        toast({ title: lang === 'de' ? 'Tarif aktiviert!' : 'Plan activated!' });
+                      }
+                    }}
+                  >
+                    {lang === 'de' ? `Bezahlen ${({ '25': 49, '50': 89, '100': 149 } as Record<string, number>)[selectedTier]} €` : `Pay ${({ '25': 49, '50': 89, '100': 149 } as Record<string, number>)[selectedTier]} €`}
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <div className="grid grid-cols-3 gap-0 border border-border rounded-xl overflow-hidden">
+                    {(['15', '30', '90'] as const).map((days) => {
+                      const prices = { '15': 29, '30': 49, '90': 99 };
+                      const isSelected = selectedUnlimitedDays === days;
+                      const isBest = days === '30';
+                      return (
+                        <button
+                          key={days}
+                          onClick={() => setSelectedUnlimitedDays(days)}
+                          className={`py-5 px-3 text-center transition-all relative ${isSelected ? 'bg-accent/15 border-2 border-accent rounded-xl z-10 shadow-md -mx-px' : 'bg-card'}`}
+                        >
+                          <p className="text-sm font-medium text-foreground mb-3">{days} {lang === 'de' ? 'Tage' : 'days'}</p>
+                          {isBest && (
+                            <p className="text-xs font-bold text-accent uppercase tracking-wider mb-1">
+                              {lang === 'de' ? 'BESTSELLER' : 'BEST SELLER'}
+                            </p>
+                          )}
+                          <p className="text-2xl font-bold text-foreground">
+                            <span className="line-through text-muted-foreground text-base mr-1">{prices[days] * 2} €</span>
+                            {prices[days]} €
+                          </p>
+                          <p className="text-xs text-accent font-bold mt-1">-50%</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    className="w-full mt-6"
+                    size="lg"
+                    onClick={() => {
+                      const prices = { '15': 29, '30': 49, '90': 99 };
+                      const price = prices[selectedUnlimitedDays];
+                      if ((profile?.balance ?? 0) < price) {
+                        setTariffStep(2);
+                      } else {
+                        setTariffOpen(false);
+                        toast({ title: lang === 'de' ? 'Tarif aktiviert!' : 'Plan activated!' });
+                      }
+                    }}
+                  >
+                    {lang === 'de' ? `Bezahlen ${({ '15': 29, '30': 49, '90': 99 } as Record<string, number>)[selectedUnlimitedDays]} €` : `Pay ${({ '15': 29, '30': 49, '90': 99 } as Record<string, number>)[selectedUnlimitedDays]} €`}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
 
-            {/* Basic */}
-            <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
-              <h3 className="text-lg font-bold text-foreground">
-                {lang === 'de' ? 'Basis' : 'Basic'}
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2 mb-4">
-                {lang === 'de'
-                  ? 'Festgelegte Anzahl an Bewerbungen: 25, 50 oder 100 pro Monat.'
-                  : 'Fixed number of responses: 25, 50 or 100 per month.'}
-              </p>
-              <Button variant="outline" className="w-full" onClick={() => { setTariffOpen(false); toast({ title: lang === 'de' ? 'Tarif aktiviert' : 'Plan activated' }); }}>
-                {lang === 'de' ? 'Aktivieren' : 'Activate'}
-              </Button>
-            </div>
-          </div>
+          {tariffStep === 2 && (() => {
+            const price = tariffType === 'basic'
+              ? ({ '25': 49, '50': 89, '100': 149 } as Record<string, number>)[selectedTier]
+              : ({ '15': 29, '30': 49, '90': 99 } as Record<string, number>)[selectedUnlimitedDays];
+            const needed = price - (profile?.balance ?? 0);
+            return (
+              <div className="text-center space-y-5 py-4">
+                <h2 className="text-xl font-display font-bold text-foreground">
+                  {lang === 'de'
+                    ? `Für das gewählte Paket fehlen Ihnen ${needed} €`
+                    : `You are short ${needed} € for the selected package`}
+                </h2>
+                <div className="flex items-center justify-center gap-3 text-muted-foreground">
+                  <Wallet className="w-5 h-5" />
+                  <span>
+                    {lang === 'de'
+                      ? `Aktuell auf Ihrem Konto: ${profile?.balance ?? 0} € und 0 Bonuspunkte`
+                      : `Currently on your account: ${profile?.balance ?? 0} € and 0 bonus points`}
+                  </span>
+                </div>
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={() => {
+                    setTariffOpen(false);
+                    setTariffStep(1);
+                    // Open wallet top-up from header — navigate to account tab
+                    navigate('/dashboard?tab=account', { replace: true });
+                    toast({ title: lang === 'de' ? 'Bitte laden Sie Ihr Guthaben auf' : 'Please top up your balance' });
+                  }}
+                >
+                  {lang === 'de' ? `Konto aufladen um ${needed} €` : `Top up account by ${needed} €`}
+                </Button>
+              </div>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>
