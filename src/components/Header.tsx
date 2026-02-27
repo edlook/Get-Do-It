@@ -185,17 +185,17 @@ export default function Header() {
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                      <a href="/dashboard?tab=tariffs" className="flex items-center gap-2 cursor-pointer">
                         <CreditCard className="w-4 h-4" /> {lt.tariffs}
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                      <a href="/dashboard?tab=settings&sub=subscriptions" className="flex items-center gap-2 cursor-pointer">
                         <Bell className="w-4 h-4" /> {lt.taskSub}
                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <a href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                      <a href="/dashboard?tab=settings" className="flex items-center gap-2 cursor-pointer">
                         <Settings className="w-4 h-4" /> {lt.settings}
                       </a>
                     </DropdownMenuItem>
