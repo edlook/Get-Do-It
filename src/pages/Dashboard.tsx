@@ -191,7 +191,7 @@ export default function Dashboard() {
   };
 
   const handleBecomeProvider = () => {
-    navigate('/verification');
+    navigate('/become-provider');
   };
 
   if (authLoading || !user) return null;

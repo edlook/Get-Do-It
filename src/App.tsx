@@ -16,6 +16,7 @@ import StaticPage from "./pages/StaticPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
 import Verification from "./pages/Verification";
+import BecomeProvider from "./pages/BecomeProvider";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/about" element={<StaticPage titleKey="about" />} />
               <Route path="/blog" element={<BlogIndex />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/become-provider" element={<BecomeProvider />} />
               <Route path="/verification" element={<Verification />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
