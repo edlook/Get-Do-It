@@ -11,8 +11,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
+import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight, X, Upload, CreditCard, Check } from 'lucide-react';
+import { Dialog, DialogContent, DialogClose, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Tables } from '@/integrations/supabase/types';
 import blogBestProvider from '@/assets/blog-best-provider.png';
 import blogFirstTask from '@/assets/blog-first-task.png';
@@ -49,6 +50,9 @@ export default function Dashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docVerifyOpen, setDocVerifyOpen] = useState(false);
   const [docCountry, setDocCountry] = useState('');
+  const [docStep, setDocStep] = useState(0); // 0=intro, 1=upload, 2=payment, 3=done
+  const [docFiles, setDocFiles] = useState<File[]>([]);
+  const [tariffOpen, setTariffOpen] = useState(false);
   const [settingsSubTab, setSettingsSubTab] = useState('general');
   const [editLastName, setEditLastName] = useState('');
   const [editDob, setEditDob] = useState('');
@@ -56,6 +60,7 @@ export default function Dashboard() {
   const [editEmail, setEditEmail] = useState('');
   const [savingSettings, setSavingSettings] = useState(false);
   const [savingPhone, setSavingPhone] = useState(false);
+  const docFileRef = useRef<HTMLInputElement>(null);
 
   const tr = {
     de: {
@@ -514,6 +519,10 @@ export default function Dashboard() {
                 <TabsTrigger value="account" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.account}
                 </TabsTrigger>
+                <TabsTrigger value="tariffs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base flex items-center gap-1">
+                  {lang === 'de' ? 'Tarife' : 'Tariffs'}
+                  <span className="text-xs bg-accent text-accent-foreground rounded-full px-1.5 py-0.5 font-bold">-50%</span>
+                </TabsTrigger>
                 <TabsTrigger value="insurance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.insurance}
                 </TabsTrigger>
@@ -632,7 +641,45 @@ export default function Dashboard() {
                 </div>
               </TabsContent>
 
-              {/* Insurance */}
+              {/* Tariffs */}
+              <TabsContent value="tariffs" className="pt-8">
+                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+                  {lang === 'de' ? 'Tarifauswahl' : 'Choose a plan'}
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-6 max-w-2xl">
+                  {/* Unlimited */}
+                  <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+                    <h3 className="text-xl font-bold text-foreground flex items-center justify-center gap-2">
+                      {lang === 'de' ? 'Unbegrenzt' : 'Unlimited'}
+                      <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-bold">-50%</span>
+                    </h3>
+                    <p className="text-muted-foreground mt-3 mb-5">
+                      {lang === 'de'
+                        ? 'Unbegrenzte Anzahl an Bewerbungen für 15, 30 oder 90 Tage.'
+                        : 'Unlimited responses for 15, 30 or 90 days.'}
+                    </p>
+                    <Button className="w-full" onClick={() => setTariffOpen(true)}>
+                      {lang === 'de' ? 'Mit 50% Rabatt aktivieren' : 'Activate with 50% off'}
+                    </Button>
+                  </div>
+
+                  {/* Basic */}
+                  <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+                    <h3 className="text-xl font-bold text-foreground">
+                      {lang === 'de' ? 'Basis' : 'Basic'}
+                    </h3>
+                    <p className="text-muted-foreground mt-3 mb-5">
+                      {lang === 'de'
+                        ? 'Festgelegte Anzahl an Bewerbungen: 25, 50 oder 100 pro Monat.'
+                        : 'Fixed number of responses: 25, 50 or 100 per month.'}
+                    </p>
+                    <Button variant="outline" className="w-full" onClick={() => setTariffOpen(true)}>
+                      {lang === 'de' ? 'Aktivieren' : 'Activate'}
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+
               <TabsContent value="insurance" className="pt-8">
                 <h2 className="text-xl font-display font-bold text-foreground mb-4">{t.insuranceTitle}</h2>
                 <p className="text-muted-foreground">{t.insuranceDesc}</p>
@@ -901,53 +948,189 @@ export default function Dashboard() {
       <Footer />
 
       {/* Document verification dialog */}
-      <Dialog open={docVerifyOpen} onOpenChange={setDocVerifyOpen}>
-        <DialogContent className="sm:max-w-lg p-8 text-center">
-          <h2 className="text-2xl font-display font-bold text-foreground mb-4">
-            {lang === 'de' ? 'Warum eine Dokumentenprüfung?' : 'Why verify documents?'}
-          </h2>
-          <p className="text-muted-foreground mb-2">
-            {lang === 'de'
-              ? 'Dienstleister mit dem Abzeichen «Dokumente bestätigt» wecken mehr Vertrauen bei Auftraggebern und erhalten durchschnittlich 20% mehr Aufträge.'
-              : 'Providers with the "Documents Verified" badge build more trust with clients and receive on average 20% more tasks.'}
-          </p>
-          <p className="text-foreground font-medium mb-6">
-            {lang === 'de'
-              ? 'Die Prüfung wird von unserem Partner durchgeführt und kostet 9,99 €.'
-              : 'Verification is conducted by our partner and costs €9.99.'}
-          </p>
+      <Dialog open={docVerifyOpen} onOpenChange={(open) => { setDocVerifyOpen(open); if (!open) { setDocStep(0); setDocCountry(''); setDocFiles([]); } }}>
+        <DialogContent className="sm:max-w-lg p-8">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-display font-bold text-foreground text-center">
+              {docStep === 0 && (lang === 'de' ? 'Dokumentenprüfung' : 'Document Verification')}
+              {docStep === 1 && (lang === 'de' ? 'Dokumente hochladen' : 'Upload Documents')}
+              {docStep === 2 && (lang === 'de' ? 'Zahlung' : 'Payment')}
+              {docStep === 3 && (lang === 'de' ? 'Abgeschlossen' : 'Complete')}
+            </DialogTitle>
+          </DialogHeader>
 
-          <div className="text-left mb-6">
-            <label className="text-sm text-muted-foreground">{lang === 'de' ? 'Staatsangehörigkeit' : 'Country of citizenship'}</label>
-            <Input
-              value={docCountry}
-              onChange={(e) => setDocCountry(e.target.value)}
-              placeholder={lang === 'de' ? 'Land suchen...' : 'Search country...'}
-              className="mt-1"
-            />
+          {/* Step 0: Intro + Country */}
+          {docStep === 0 && (
+            <div className="space-y-4">
+              <p className="text-muted-foreground text-center">
+                {lang === 'de'
+                  ? 'Dienstleister mit dem Abzeichen «Dokumente bestätigt» erhalten durchschnittlich 20% mehr Aufträge.'
+                  : 'Providers with "Documents Verified" badge receive 20% more tasks on average.'}
+              </p>
+              <div>
+                <Label>{lang === 'de' ? 'Staatsangehörigkeit' : 'Country of citizenship'}</Label>
+                <Select value={docCountry} onValueChange={setDocCountry}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={lang === 'de' ? 'Land wählen...' : 'Select country...'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['Deutschland', 'Österreich', 'Schweiz', 'Russland', 'Ukraine', 'Kasachstan', 'Türkei', 'Polen', 'Rumänien', 'Bulgarien', 'Serbien', 'Kroatien', 'Bosnien', 'Moldawien', 'Georgien', 'Armenien'].map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button size="lg" className="w-full" disabled={!docCountry} onClick={() => setDocStep(1)}>
+                {lang === 'de' ? 'Weiter' : 'Continue'}
+              </Button>
+            </div>
+          )}
+
+          {/* Step 1: Upload Documents */}
+          {docStep === 1 && (
+            <div className="space-y-4">
+              <p className="text-muted-foreground text-sm">
+                {lang === 'de'
+                  ? 'Laden Sie Ihren Reisepass oder Personalausweis hoch. Sie können auch ein Selfie mit dem Dokument hinzufügen.'
+                  : 'Upload your passport or ID card. You can also add a selfie with the document.'}
+              </p>
+              <input ref={docFileRef} type="file" accept="image/*,.pdf" multiple className="hidden" onChange={(e) => {
+                if (e.target.files) setDocFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+              }} />
+              <div
+                onClick={() => docFileRef.current?.click()}
+                className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary transition-colors"
+              >
+                <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  {lang === 'de' ? 'Klicken oder Dateien hierher ziehen' : 'Click or drag files here'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG</p>
+              </div>
+              {docFiles.length > 0 && (
+                <div className="space-y-2">
+                  {docFiles.map((f, i) => (
+                    <div key={i} className="flex items-center justify-between bg-secondary rounded-lg px-3 py-2">
+                      <span className="text-sm text-foreground truncate">{f.name}</span>
+                      <button onClick={() => setDocFiles(prev => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-destructive">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setDocStep(0)} className="flex-1">
+                  {lang === 'de' ? 'Zurück' : 'Back'}
+                </Button>
+                <Button onClick={() => setDocStep(2)} disabled={docFiles.length === 0} className="flex-1">
+                  {lang === 'de' ? 'Weiter' : 'Continue'}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Payment */}
+          {docStep === 2 && (
+            <div className="space-y-4 text-center">
+              <CreditCard className="w-12 h-12 mx-auto text-primary" />
+              <p className="text-foreground font-medium">
+                {lang === 'de'
+                  ? 'Die Prüfung wird von unserem Partner durchgeführt und kostet 9,99 €.'
+                  : 'Verification is conducted by our partner and costs €9.99.'}
+              </p>
+              <div className="bg-secondary rounded-xl p-4 text-left space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{lang === 'de' ? 'Dokumentenprüfung' : 'Document verification'}</span>
+                  <span className="text-foreground font-medium">9,99 €</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{lang === 'de' ? 'Dokumente' : 'Documents'}</span>
+                  <span className="text-foreground">{docFiles.length} {lang === 'de' ? 'Datei(en)' : 'file(s)'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{lang === 'de' ? 'Land' : 'Country'}</span>
+                  <span className="text-foreground">{docCountry}</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setDocStep(1)} className="flex-1">
+                  {lang === 'de' ? 'Zurück' : 'Back'}
+                </Button>
+                <Button onClick={() => {
+                  setDocStep(3);
+                  toast({ title: lang === 'de' ? 'Zahlung erfolgreich' : 'Payment successful' });
+                }} className="flex-1">
+                  {lang === 'de' ? 'Jetzt bezahlen — 9,99 €' : 'Pay now — €9.99'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {lang === 'de'
+                  ? 'Mit dem Klick stimmen Sie den Prüfungsregeln zu.'
+                  : 'By clicking you agree to the verification rules.'}
+              </p>
+            </div>
+          )}
+
+          {/* Step 3: Done */}
+          {docStep === 3 && (
+            <div className="text-center space-y-4 py-4">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                <Check className="w-8 h-8 text-primary" />
+              </div>
+              <p className="text-foreground font-medium">
+                {lang === 'de'
+                  ? 'Ihre Dokumente wurden eingereicht. Die Prüfung dauert in der Regel 1–3 Werktage.'
+                  : 'Your documents have been submitted. Verification usually takes 1–3 business days.'}
+              </p>
+              <Button onClick={() => { setDocVerifyOpen(false); setDocStep(0); setDocCountry(''); setDocFiles([]); }}>
+                {lang === 'de' ? 'Schließen' : 'Close'}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Tariff selection dialog */}
+      <Dialog open={tariffOpen} onOpenChange={setTariffOpen}>
+        <DialogContent className="sm:max-w-md p-8">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-display font-bold text-foreground text-center">
+              {lang === 'de' ? 'Tarifauswahl' : 'Choose a plan'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            {/* Unlimited */}
+            <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+              <h3 className="text-lg font-bold text-foreground flex items-center justify-center gap-2">
+                {lang === 'de' ? 'Unbegrenzt' : 'Unlimited'}
+                <span className="text-xs bg-accent text-accent-foreground rounded-full px-2 py-0.5 font-bold">-50%</span>
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
+                {lang === 'de'
+                  ? 'Unbegrenzte Anzahl an Bewerbungen für 15, 30 oder 90 Tage.'
+                  : 'Unlimited responses for 15, 30 or 90 days.'}
+              </p>
+              <Button className="w-full" onClick={() => { setTariffOpen(false); toast({ title: lang === 'de' ? 'Tarif aktiviert' : 'Plan activated' }); }}>
+                {lang === 'de' ? 'Mit 50% Rabatt aktivieren' : 'Activate with 50% off'}
+              </Button>
+            </div>
+
+            {/* Basic */}
+            <div className="bg-card rounded-xl border border-border p-6 text-center shadow-sm">
+              <h3 className="text-lg font-bold text-foreground">
+                {lang === 'de' ? 'Basis' : 'Basic'}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 mb-4">
+                {lang === 'de'
+                  ? 'Festgelegte Anzahl an Bewerbungen: 25, 50 oder 100 pro Monat.'
+                  : 'Fixed number of responses: 25, 50 or 100 per month.'}
+              </p>
+              <Button variant="outline" className="w-full" onClick={() => { setTariffOpen(false); toast({ title: lang === 'de' ? 'Tarif aktiviert' : 'Plan activated' }); }}>
+                {lang === 'de' ? 'Aktivieren' : 'Activate'}
+              </Button>
+            </div>
           </div>
-
-          <Button
-            size="lg"
-            className="w-full py-6 text-base"
-            disabled={!docCountry.trim()}
-            onClick={() => {
-              setDocVerifyOpen(false);
-              toast({ title: lang === 'de' ? 'Prüfung gestartet' : 'Verification started' });
-            }}
-          >
-            {lang === 'de' ? 'Prüfung starten für 9,99 €' : 'Start verification for €9.99'}
-          </Button>
-
-          <p className="text-xs text-muted-foreground mt-4">
-            {lang === 'de'
-              ? 'Mit dem Klick auf «Prüfung starten» stimmen Sie den Prüfungsregeln zu. Wenn Sie die Prüfung jetzt nicht abschließen, können Sie jederzeit zurückkehren.'
-              : 'By clicking "Start verification", you agree to the verification rules. If you don\'t complete it now, you can return at any time.'}
-            {' '}
-            <Link to="/help/document-verification" className="text-primary hover:underline">
-              {lang === 'de' ? 'Mehr erfahren' : 'Learn more'}
-            </Link>
-          </p>
         </DialogContent>
       </Dialog>
     </div>
