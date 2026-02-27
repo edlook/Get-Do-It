@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 
 export default function Auth() {
   const { lang } = useLang();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
@@ -26,8 +26,8 @@ export default function Auth() {
   const [registered, setRegistered] = useState(false);
 
   useEffect(() => {
-    if (user) navigate('/dashboard');
-  }, [user, navigate]);
+    if (!authLoading && user) navigate('/dashboard');
+  }, [user, authLoading, navigate]);
 
   const tr = {
     de: {
