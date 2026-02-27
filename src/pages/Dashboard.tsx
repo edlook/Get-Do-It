@@ -565,8 +565,11 @@ export default function Dashboard() {
 
                   <p className="text-sm text-muted-foreground mb-4">
                     {lang === 'de'
-                      ? 'Um das Abzeichen «Dokumente bestätigt» zu erhalten, senden Sie Ihren Ausweis und ein Selfie mit Dokument zur Prüfung.'
-                      : 'To get the "Documents verified" badge, submit your ID and a selfie with your document for review.'}
+                      ? 'Um das Abzeichen «Dokumente bestätigt» zu erhalten, senden Sie Ihren Ausweis und ein Selfie mit Dokument zur Prüfung. '
+                      : 'To get the "Documents verified" badge, submit your ID and a selfie with your document for review. '}
+                    <Link to="/help/document-verification" className="text-primary hover:underline">
+                      {lang === 'de' ? 'Mehr erfahren' : 'Learn more'}
+                    </Link>
                   </p>
 
                   {/* Documents */}
@@ -576,7 +579,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{lang === 'de' ? 'Dokumente' : 'Documents'}</p>
-                      <button className="text-sm text-primary hover:underline">{lang === 'de' ? 'Prüfung starten' : 'Start verification'}</button>
+                      <Link to="/help/document-verification" className="text-sm text-primary hover:underline">{lang === 'de' ? 'Prüfung starten' : 'Start verification'}</Link>
                     </div>
                   </div>
 
