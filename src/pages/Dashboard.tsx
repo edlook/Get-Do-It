@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import blogBestProvider from '@/assets/blog-best-provider.png';
@@ -302,12 +303,77 @@ export default function Dashboard() {
                       )}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">{t.noRatings}</p>
-                    {/* Stats circles */}
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-xs text-muted-foreground font-semibold">ТОП</div>
-                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-muted-foreground">👍</div>
-                      <div className="w-12 h-12 rounded-full border-2 border-muted flex items-center justify-center text-xs text-muted-foreground font-semibold">%</div>
-                    </div>
+                    {/* Badge shields */}
+                    <TooltipProvider delayDuration={200}>
+                      <div className="flex items-center gap-3 mt-3">
+                        {/* TOP badge */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-14 h-14 cursor-help relative">
+                              <svg viewBox="0 0 60 60" className="w-full h-full">
+                                {/* Shield shape with dashed border */}
+                                <path
+                                  d="M30 4 L52 14 L52 30 Q52 48 30 56 Q8 48 8 30 L8 14 Z"
+                                  fill="none"
+                                  stroke="hsl(var(--muted-foreground) / 0.3)"
+                                  strokeWidth="2"
+                                  strokeDasharray="4 3"
+                                />
+                                <text x="30" y="34" textAnchor="middle" className="fill-muted-foreground text-[11px] font-bold">TOP</text>
+                              </svg>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] text-center p-3">
+                            <p className="font-semibold mb-1">{lang === 'de' ? 'TOP-Dienstleister' : 'TOP Provider Badge'}</p>
+                            <p className="text-xs">{lang === 'de' ? 'Wird vergeben, wenn Sie die Top 50 im Ranking Ihrer Kategorie erreichen.' : 'Awarded when you reach the top 50 in your category ranking.'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Completed tasks badge */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-14 h-14 cursor-help relative">
+                              <svg viewBox="0 0 60 60" className="w-full h-full">
+                                <path
+                                  d="M30 4 L52 14 L52 30 Q52 48 30 56 Q8 48 8 30 L8 14 Z"
+                                  fill="none"
+                                  stroke="hsl(var(--muted-foreground) / 0.3)"
+                                  strokeWidth="2"
+                                  strokeDasharray="4 3"
+                                />
+                                <text x="30" y="35" textAnchor="middle" className="fill-muted-foreground text-[16px]">👍</text>
+                              </svg>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] text-center p-3">
+                            <p className="font-semibold mb-1">{lang === 'de' ? 'Abgeschlossene Aufträge' : 'Completed Tasks Badge'}</p>
+                            <p className="text-xs">{lang === 'de' ? 'Wird vergeben bei 50, 100, 200, 300, 400, 500 abgeschlossenen Aufträgen.' : 'Awarded at 50, 100, 200, 300, 400, 500 completed tasks.'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Success rate badge */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-14 h-14 cursor-help relative">
+                              <svg viewBox="0 0 60 60" className="w-full h-full">
+                                <path
+                                  d="M30 4 L52 14 L52 30 Q52 48 30 56 Q8 48 8 30 L8 14 Z"
+                                  fill="none"
+                                  stroke="hsl(var(--muted-foreground) / 0.3)"
+                                  strokeWidth="2"
+                                  strokeDasharray="4 3"
+                                />
+                                <text x="30" y="35" textAnchor="middle" className="fill-muted-foreground text-[14px] font-bold">%</text>
+                              </svg>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[220px] text-center p-3">
+                            <p className="font-semibold mb-1">{lang === 'de' ? 'Erfolgsquote' : 'Success Rate Badge'}</p>
+                            <p className="text-xs">{lang === 'de' ? 'Wird vergeben bei Abschluss von 10 Aufträgen.' : 'Awarded after completing 10 tasks.'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
                     <button onClick={() => setEditing(true)} className="text-sm text-primary hover:underline mt-3 self-start flex items-center gap-1">
                       <Edit2 className="w-3.5 h-3.5" /> {t.edit}
                     </button>
