@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLang } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,6 +38,7 @@ export default function Dashboard() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { lang } = useLang();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -53,7 +54,8 @@ export default function Dashboard() {
   const [docStep, setDocStep] = useState(0); // 0=intro, 1=upload, 2=payment, 3=done
   const [docFiles, setDocFiles] = useState<File[]>([]);
   const [tariffOpen, setTariffOpen] = useState(false);
-  const [settingsSubTab, setSettingsSubTab] = useState('general');
+  const [settingsSubTab, setSettingsSubTab] = useState(searchParams.get('sub') || 'general');
+  const activeTab = searchParams.get('tab') || 'about';
   const [editLastName, setEditLastName] = useState('');
   const [editDob, setEditDob] = useState('');
   const [editPhone, setEditPhone] = useState('');
@@ -509,7 +511,7 @@ export default function Dashboard() {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="about" className="w-full">
+            <Tabs value={activeTab} onValueChange={(val) => navigate(`/dashboard?tab=${val}`, { replace: true })} className="w-full">
               <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-auto p-0 gap-0">
                 <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-6 py-3 text-base">
                   {t.aboutMe}
