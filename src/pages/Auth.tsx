@@ -95,8 +95,8 @@ export default function Auth() {
           },
         });
         if (error) throw error;
-        setRegistered(true);
-        toast({ title: t.registerSuccess, description: t.checkEmail });
+        toast({ title: t.registerSuccess });
+        navigate('/dashboard');
       }
     } catch (err: any) {
       toast({ title: t.error, description: err.message, variant: 'destructive' });
