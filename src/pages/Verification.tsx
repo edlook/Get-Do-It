@@ -156,6 +156,12 @@ export default function Verification() {
   const [city, setCity] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [otpTimer, setOtpTimer] = useState(0);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [expandedCats, setExpandedCats] = useState<Set<number>>(new Set());
@@ -208,6 +214,44 @@ export default function Verification() {
     });
   };
 
+  // OTP timer countdown
+  useState(() => {
+    if (otpTimer <= 0) return;
+    const interval = setInterval(() => {
+      setOtpTimer((t) => {
+        if (t <= 1) { clearInterval(interval); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+
+  const handleSendOtp = () => {
+    if (!phone.trim() || phone.length < 8) {
+      toast({ title: lang === 'de' ? 'Bitte geben Sie eine gültige Telefonnummer ein' : 'Please enter a valid phone number', variant: 'destructive' });
+      return;
+    }
+    setOtpLoading(true);
+    // Simulate OTP send — in production use SMS service
+    const code = String(Math.floor(1000 + Math.random() * 9000));
+    setGeneratedOtp(code);
+    setTimeout(() => {
+      setOtpSent(true);
+      setOtpLoading(false);
+      setOtpTimer(60);
+      toast({ title: lang === 'de' ? `Code gesendet: ${code}` : `Code sent: ${code}` });
+    }, 800);
+  };
+
+  const handleVerifyOtp = () => {
+    if (otpCode === generatedOtp) {
+      setPhoneVerified(true);
+      toast({ title: lang === 'de' ? 'Telefonnummer bestätigt!' : 'Phone number verified!' });
+    } else {
+      toast({ title: lang === 'de' ? 'Falscher Code' : 'Wrong code', variant: 'destructive' });
+    }
+  };
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -221,8 +265,8 @@ export default function Verification() {
       toast({ title: t.requiredFields, variant: 'destructive' });
       return;
     }
-    if (step === 2 && !phone.trim()) {
-      toast({ title: t.requiredFields, variant: 'destructive' });
+    if (step === 2 && (!phone.trim() || !phoneVerified)) {
+      toast({ title: !phone.trim() ? t.requiredFields : (lang === 'de' ? 'Bitte bestätigen Sie Ihre Telefonnummer' : 'Please verify your phone number'), variant: 'destructive' });
       return;
     }
     if (step === 4 && selectedSubs.size === 0) {
@@ -344,12 +388,63 @@ export default function Verification() {
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">{t.phone} *</label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t.phonePlaceholder} className="mt-1" />
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      value={phone}
+                      onChange={(e) => { setPhone(e.target.value); setPhoneVerified(false); setOtpSent(false); setOtpCode(''); }}
+                      placeholder={t.phonePlaceholder}
+                      disabled={phoneVerified}
+                      className={phoneVerified ? 'bg-green-50 border-green-300 flex-1' : 'flex-1'}
+                    />
+                    {!phoneVerified && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleSendOtp}
+                        disabled={otpLoading || (otpTimer > 0)}
+                        className="shrink-0"
+                      >
+                        {otpLoading ? '...' : otpTimer > 0 ? `${otpTimer}s` : otpSent ? (lang === 'de' ? 'Erneut senden' : 'Resend') : (lang === 'de' ? 'Code senden' : 'Send code')}
+                      </Button>
+                    )}
+                  </div>
+                  {phoneVerified && (
+                    <p className="text-sm text-green-600 mt-1 flex items-center gap-1">
+                      ✓ {lang === 'de' ? 'Bestätigt' : 'Verified'}
+                    </p>
+                  )}
                 </div>
+                {otpSent && !phoneVerified && (
+                  <div>
+                    <label className="text-sm text-muted-foreground">
+                      {lang === 'de' ? 'Bestätigungscode' : 'Verification code'}
+                    </label>
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        placeholder="1234"
+                        maxLength={4}
+                        className="flex-1 text-center text-lg tracking-[0.5em] font-mono"
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        disabled={otpCode.length < 4}
+                        className="shrink-0"
+                      >
+                        {lang === 'de' ? 'Bestätigen' : 'Verify'}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {lang === 'de' ? 'Geben Sie den 4-stelligen Code ein, der an Ihre Nummer gesendet wurde' : 'Enter the 4-digit code sent to your number'}
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 mt-8">
                 <Button variant="outline" className="flex-1 py-5" onClick={() => setStep(1)}>{t.back}</Button>
-                <Button className="flex-1 py-5" onClick={handleNext}>{t.next}</Button>
+                <Button className="flex-1 py-5" onClick={handleNext} disabled={!phoneVerified}>{t.next}</Button>
               </div>
             </div>
           )}
