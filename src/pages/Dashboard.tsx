@@ -341,7 +341,7 @@ export default function Dashboard() {
                                   strokeWidth="2"
                                   strokeDasharray="4 3"
                                 />
-                                <text x="30" y="35" textAnchor="middle" className="fill-muted-foreground text-[16px]">👍</text>
+                                <text x="30" y="35" textAnchor="middle" className="fill-muted-foreground/40 text-[16px]" style={{ filter: 'grayscale(1)' }}>👍</text>
                               </svg>
                             </div>
                           </TooltipTrigger>
