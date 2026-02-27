@@ -11,7 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight } from 'lucide-react';
+import { MapPin, Camera, Mail, Edit2, Plus, Clock, Shield, Settings, ArrowRight, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
 import type { Tables } from '@/integrations/supabase/types';
 import blogBestProvider from '@/assets/blog-best-provider.png';
 import blogFirstTask from '@/assets/blog-first-task.png';
@@ -46,6 +47,8 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [profileViews, setProfileViews] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [docVerifyOpen, setDocVerifyOpen] = useState(false);
+  const [docCountry, setDocCountry] = useState('');
 
   const tr = {
     de: {
@@ -579,7 +582,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">{lang === 'de' ? 'Dokumente' : 'Documents'}</p>
-                      <Link to="/help/document-verification" className="text-sm text-primary hover:underline">{lang === 'de' ? 'Prüfung starten' : 'Start verification'}</Link>
+                      <button onClick={() => setDocVerifyOpen(true)} className="text-sm text-primary hover:underline">{lang === 'de' ? 'Prüfung starten' : 'Start verification'}</button>
                     </div>
                   </div>
 
@@ -651,6 +654,57 @@ export default function Dashboard() {
         </div>
       </main>
       <Footer />
+
+      {/* Document verification dialog */}
+      <Dialog open={docVerifyOpen} onOpenChange={setDocVerifyOpen}>
+        <DialogContent className="sm:max-w-lg p-8 text-center">
+          <h2 className="text-2xl font-display font-bold text-foreground mb-4">
+            {lang === 'de' ? 'Warum eine Dokumentenprüfung?' : 'Why verify documents?'}
+          </h2>
+          <p className="text-muted-foreground mb-2">
+            {lang === 'de'
+              ? 'Dienstleister mit dem Abzeichen «Dokumente bestätigt» wecken mehr Vertrauen bei Auftraggebern und erhalten durchschnittlich 20% mehr Aufträge.'
+              : 'Providers with the "Documents Verified" badge build more trust with clients and receive on average 20% more tasks.'}
+          </p>
+          <p className="text-foreground font-medium mb-6">
+            {lang === 'de'
+              ? 'Die Prüfung wird von unserem Partner durchgeführt und kostet 9,99 €.'
+              : 'Verification is conducted by our partner and costs €9.99.'}
+          </p>
+
+          <div className="text-left mb-6">
+            <label className="text-sm text-muted-foreground">{lang === 'de' ? 'Staatsangehörigkeit' : 'Country of citizenship'}</label>
+            <Input
+              value={docCountry}
+              onChange={(e) => setDocCountry(e.target.value)}
+              placeholder={lang === 'de' ? 'Land suchen...' : 'Search country...'}
+              className="mt-1"
+            />
+          </div>
+
+          <Button
+            size="lg"
+            className="w-full py-6 text-base"
+            disabled={!docCountry.trim()}
+            onClick={() => {
+              setDocVerifyOpen(false);
+              toast({ title: lang === 'de' ? 'Prüfung gestartet' : 'Verification started' });
+            }}
+          >
+            {lang === 'de' ? 'Prüfung starten für 9,99 €' : 'Start verification for €9.99'}
+          </Button>
+
+          <p className="text-xs text-muted-foreground mt-4">
+            {lang === 'de'
+              ? 'Mit dem Klick auf «Prüfung starten» stimmen Sie den Prüfungsregeln zu. Wenn Sie die Prüfung jetzt nicht abschließen, können Sie jederzeit zurückkehren.'
+              : 'By clicking "Start verification", you agree to the verification rules. If you don\'t complete it now, you can return at any time.'}
+            {' '}
+            <Link to="/help/document-verification" className="text-primary hover:underline">
+              {lang === 'de' ? 'Mehr erfahren' : 'Learn more'}
+            </Link>
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
