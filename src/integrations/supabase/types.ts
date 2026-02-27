@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profile_views: {
         Row: {
           id: string
@@ -47,6 +101,7 @@ export type Database = {
         Row: {
           about: string | null
           avatar_url: string | null
+          balance: number
           city: string | null
           created_at: string
           date_of_birth: string | null
@@ -61,6 +116,7 @@ export type Database = {
         Insert: {
           about?: string | null
           avatar_url?: string | null
+          balance?: number
           city?: string | null
           created_at?: string
           date_of_birth?: string | null
@@ -75,6 +131,7 @@ export type Database = {
         Update: {
           about?: string | null
           avatar_url?: string | null
+          balance?: number
           city?: string | null
           created_at?: string
           date_of_birth?: string | null
