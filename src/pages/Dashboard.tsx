@@ -738,8 +738,24 @@ export default function Dashboard() {
                                 : 'Unlimited responses in selected categories. Choose one or more categories.')}
                           </p>
 
-                          <div className="mb-2 text-sm text-muted-foreground font-medium">
-                            {lang === 'de' ? 'Kategorieliste' : 'Category list'}
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-muted-foreground font-medium">
+                              {lang === 'de' ? 'Kategorieliste' : 'Category list'}
+                            </span>
+                            <button
+                              onClick={() => {
+                                if (selectedCategories.length === categories.length) {
+                                  setSelectedCategories([]);
+                                } else {
+                                  setSelectedCategories(categories.map(c => c.id));
+                                }
+                              }}
+                              className="text-sm text-primary hover:underline font-medium"
+                            >
+                              {selectedCategories.length === categories.length
+                                ? (lang === 'de' ? 'Alle abwählen' : 'Deselect all')
+                                : (lang === 'de' ? 'Alle auswählen' : 'Select all')}
+                            </button>
                           </div>
                           <div className="border border-border rounded-xl overflow-hidden mb-24">
                             {categories.map((cat) => {
