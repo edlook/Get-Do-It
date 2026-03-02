@@ -59,6 +59,7 @@ export default function Dashboard() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTier, setSelectedTier] = useState<'25' | '50' | '100'>('50');
   const [selectedUnlimitedDays, setSelectedUnlimitedDays] = useState<'15' | '30' | '90'>('30');
+  const [expandedCats, setExpandedCats] = useState<string[]>([]);
   const [settingsSubTab, setSettingsSubTab] = useState(searchParams.get('sub') || 'general');
   const activeTab = searchParams.get('tab') || 'about';
 
@@ -696,24 +697,105 @@ export default function Dashboard() {
                     {/* Category selection */}
                     {(() => {
                       const categories = [
-                        { id: 'moving', de: 'Umzug & Transport', en: 'Moving & Transport', price: 29 },
-                        { id: 'cleaning', de: 'Reinigung', en: 'Cleaning', price: 25 },
-                        { id: 'repair', de: 'Reparatur & Handwerk', en: 'Repair & Crafts', price: 35 },
-                        { id: 'it', de: 'IT & Webentwicklung', en: 'IT & Web Development', price: 49 },
-                        { id: 'design', de: 'Design', en: 'Design', price: 39 },
-                        { id: 'assistant', de: 'Virtueller Assistent', en: 'Virtual Assistant', price: 29 },
-                        { id: 'beauty', de: 'Schönheit & Gesundheit', en: 'Beauty & Health', price: 32 },
-                        { id: 'tutoring', de: 'Nachhilfe & Unterricht', en: 'Tutoring & Lessons', price: 35 },
-                        { id: 'events', de: 'Events & Veranstaltungen', en: 'Events', price: 39 },
+                        {
+                          id: 'moving', de: 'Umzug & Transport', en: 'Moving & Transport',
+                          subs: [
+                            { id: 'moving_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 29, oldPrice: 58, best: true },
+                            { id: 'moving_local', de: 'Lokaler Umzug', en: 'Local moving', price: 15, oldPrice: 30 },
+                            { id: 'moving_long', de: 'Fernumzug', en: 'Long-distance moving', price: 19, oldPrice: 38 },
+                            { id: 'moving_furniture', de: 'Möbelmontage', en: 'Furniture assembly', price: 12, oldPrice: 24 },
+                          ]
+                        },
+                        {
+                          id: 'cleaning', de: 'Reinigung', en: 'Cleaning',
+                          subs: [
+                            { id: 'cleaning_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 25, oldPrice: 50, best: true },
+                            { id: 'cleaning_home', de: 'Wohnungsreinigung', en: 'Home cleaning', price: 14, oldPrice: 28 },
+                            { id: 'cleaning_office', de: 'Büroreinigung', en: 'Office cleaning', price: 16, oldPrice: 32 },
+                            { id: 'cleaning_window', de: 'Fensterreinigung', en: 'Window cleaning', price: 10, oldPrice: 20 },
+                          ]
+                        },
+                        {
+                          id: 'repair', de: 'Reparatur & Handwerk', en: 'Repair & Crafts',
+                          subs: [
+                            { id: 'repair_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 35, oldPrice: 70, best: true },
+                            { id: 'repair_plumbing', de: 'Sanitär & Klempner', en: 'Plumbing', price: 18, oldPrice: 36 },
+                            { id: 'repair_electric', de: 'Elektroinstallation', en: 'Electrical', price: 20, oldPrice: 40 },
+                            { id: 'repair_paint', de: 'Malerarbeiten', en: 'Painting', price: 15, oldPrice: 30 },
+                            { id: 'repair_general', de: 'Allgemeine Reparatur', en: 'General repair', price: 14, oldPrice: 28 },
+                          ]
+                        },
+                        {
+                          id: 'it', de: 'IT & Webentwicklung', en: 'IT & Web Development',
+                          subs: [
+                            { id: 'it_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 49, oldPrice: 98, best: true },
+                            { id: 'it_web', de: 'Webentwicklung', en: 'Web development', price: 25, oldPrice: 50 },
+                            { id: 'it_mobile', de: 'App-Entwicklung', en: 'App development', price: 28, oldPrice: 56 },
+                            { id: 'it_support', de: 'IT-Support', en: 'IT support', price: 15, oldPrice: 30 },
+                          ]
+                        },
+                        {
+                          id: 'design', de: 'Design', en: 'Design',
+                          subs: [
+                            { id: 'design_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 39, oldPrice: 78, best: true },
+                            { id: 'design_graphic', de: 'Grafikdesign', en: 'Graphic design', price: 20, oldPrice: 40 },
+                            { id: 'design_interior', de: 'Innenarchitektur', en: 'Interior design', price: 22, oldPrice: 44 },
+                            { id: 'design_logo', de: 'Logo & Branding', en: 'Logo & Branding', price: 18, oldPrice: 36 },
+                          ]
+                        },
+                        {
+                          id: 'assistant', de: 'Virtueller Assistent', en: 'Virtual Assistant',
+                          subs: [
+                            { id: 'assistant_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 29, oldPrice: 58, best: true },
+                            { id: 'assistant_text', de: 'Textarbeit & Copywriting', en: 'Copywriting', price: 15, oldPrice: 30 },
+                            { id: 'assistant_research', de: 'Recherche', en: 'Research', price: 12, oldPrice: 24 },
+                            { id: 'assistant_data', de: 'Datenverarbeitung', en: 'Data processing', price: 14, oldPrice: 28 },
+                            { id: 'assistant_social', de: 'Social-Media-Betreuung', en: 'Social media management', price: 16, oldPrice: 32 },
+                          ]
+                        },
+                        {
+                          id: 'beauty', de: 'Schönheit & Gesundheit', en: 'Beauty & Health',
+                          subs: [
+                            { id: 'beauty_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 32, oldPrice: 64, best: true },
+                            { id: 'beauty_hair', de: 'Friseur', en: 'Hair styling', price: 16, oldPrice: 32 },
+                            { id: 'beauty_nails', de: 'Nageldesign', en: 'Nail design', price: 14, oldPrice: 28 },
+                            { id: 'beauty_massage', de: 'Massage', en: 'Massage', price: 15, oldPrice: 30 },
+                          ]
+                        },
+                        {
+                          id: 'tutoring', de: 'Nachhilfe & Unterricht', en: 'Tutoring & Lessons',
+                          subs: [
+                            { id: 'tutoring_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 35, oldPrice: 70, best: true },
+                            { id: 'tutoring_school', de: 'Schulfächer', en: 'School subjects', price: 18, oldPrice: 36 },
+                            { id: 'tutoring_lang', de: 'Sprachunterricht', en: 'Language lessons', price: 20, oldPrice: 40 },
+                            { id: 'tutoring_music', de: 'Musikunterricht', en: 'Music lessons', price: 16, oldPrice: 32 },
+                          ]
+                        },
+                        {
+                          id: 'events', de: 'Events & Veranstaltungen', en: 'Events',
+                          subs: [
+                            { id: 'events_all', de: 'Alle Unterkategorien', en: 'All subcategories', price: 39, oldPrice: 78, best: true },
+                            { id: 'events_photo', de: 'Fotografie', en: 'Photography', price: 20, oldPrice: 40 },
+                            { id: 'events_video', de: 'Videografie', en: 'Videography', price: 22, oldPrice: 44 },
+                            { id: 'events_dj', de: 'DJ & Musik', en: 'DJ & Music', price: 18, oldPrice: 36 },
+                          ]
+                        },
                       ];
-                      const totalPrice = selectedCategories.reduce((sum, catId) => {
-                        const cat = categories.find(c => c.id === catId);
-                        return sum + (cat?.price ?? 0);
+
+                      const allSubIds = categories.flatMap(c => c.subs.map(s => s.id));
+                      const totalPrice = selectedCategories.reduce((sum, subId) => {
+                        for (const cat of categories) {
+                          const sub = cat.subs.find(s => s.id === subId);
+                          if (sub) return sum + sub.price;
+                        }
+                        return sum;
                       }, 0);
                       const tierMultiplier = tariffType === 'basic'
                         ? (selectedTier === '25' ? 1 : selectedTier === '50' ? 1.78 : 3.12)
                         : (selectedUnlimitedDays === '15' ? 1 : selectedUnlimitedDays === '30' ? 1.7 : selectedUnlimitedDays === '90' ? 3.4 : 1);
                       const finalPrice = Math.round(totalPrice * tierMultiplier);
+
+                      // expandedCats is declared at component top level
 
                       return (
                         <div className="relative">
@@ -731,11 +813,11 @@ export default function Dashboard() {
                           <p className="text-muted-foreground mb-6">
                             {tariffType === 'basic'
                               ? (lang === 'de'
-                                ? 'Wirtschaftliche Variante mit festgelegter Anzahl an Bewerbungen auf 30 Tage. Geeignet für Nebenverdienst. Wählen Sie eine oder mehrere Kategorien aus der Liste unten.'
-                                : 'Economical option with a fixed number of responses for 30 days. Suitable for side income. Select one or more categories from the list below.')
+                                ? 'Wirtschaftliche Variante mit festgelegter Anzahl an Bewerbungen auf 30 Tage. Wählen Sie Kategorien und Unterkategorien.'
+                                : 'Economical option with a fixed number of responses for 30 days. Select categories and subcategories.')
                               : (lang === 'de'
-                                ? 'Unbegrenzte Bewerbungen in den ausgewählten Kategorien. Wählen Sie eine oder mehrere Kategorien.'
-                                : 'Unlimited responses in selected categories. Choose one or more categories.')}
+                                ? 'Unbegrenzte Bewerbungen in den ausgewählten Kategorien. Wählen Sie Kategorien und Unterkategorien.'
+                                : 'Unlimited responses in selected categories. Choose categories and subcategories.')}
                           </p>
 
                           <div className="flex items-center justify-between mb-2">
@@ -744,45 +826,86 @@ export default function Dashboard() {
                             </span>
                             <button
                               onClick={() => {
-                                if (selectedCategories.length === categories.length) {
+                                if (selectedCategories.length === allSubIds.length) {
                                   setSelectedCategories([]);
                                 } else {
-                                  setSelectedCategories(categories.map(c => c.id));
+                                  setSelectedCategories([...allSubIds]);
                                 }
                               }}
                               className="text-sm text-primary hover:underline font-medium"
                             >
-                              {selectedCategories.length === categories.length
+                              {selectedCategories.length === allSubIds.length
                                 ? (lang === 'de' ? 'Alle abwählen' : 'Deselect all')
                                 : (lang === 'de' ? 'Alle auswählen' : 'Select all')}
                             </button>
                           </div>
+
                           <div className="border border-border rounded-xl overflow-hidden mb-24">
                             {categories.map((cat) => {
-                              const isSelected = selectedCategories.includes(cat.id);
+                              const isExpanded = expandedCats.includes(cat.id);
+                              const catSubIds = cat.subs.map(s => s.id);
+                              const selectedInCat = catSubIds.filter(id => selectedCategories.includes(id)).length;
+                              const catTotal = cat.subs.reduce((s, sub) => s + (selectedCategories.includes(sub.id) ? sub.price : 0), 0);
+
                               return (
-                                <label
-                                  key={cat.id}
-                                  className={`flex items-center justify-between px-5 py-4 cursor-pointer border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/50'}`}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
-                                      {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                <div key={cat.id} className="border-b border-border last:border-0">
+                                  <button
+                                    onClick={() => setExpandedCats(prev => isExpanded ? prev.filter(id => id !== cat.id) : [...prev, cat.id])}
+                                    className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/50 transition-colors"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <span className="font-semibold text-foreground">{cat[lang as 'de' | 'en']}</span>
+                                      {selectedInCat > 0 && (
+                                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5 font-medium">
+                                          {selectedInCat}
+                                        </span>
+                                      )}
                                     </div>
-                                    <span className="font-medium text-foreground">{cat[lang]}</span>
-                                  </div>
-                                  <span className="text-muted-foreground text-sm">{lang === 'de' ? 'ab' : 'from'} {cat.price} €</span>
-                                  <input
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={isSelected}
-                                    onChange={() => {
-                                      setSelectedCategories(prev =>
-                                        isSelected ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
-                                      );
-                                    }}
-                                  />
-                                </label>
+                                    <svg className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                  </button>
+
+                                  {isExpanded && (
+                                    <div className="bg-muted/20">
+                                      {cat.subs.map((sub) => {
+                                        const isSelected = selectedCategories.includes(sub.id);
+                                        return (
+                                          <label
+                                            key={sub.id}
+                                            className={`flex items-center justify-between px-5 py-3.5 cursor-pointer border-t border-border/50 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
+                                          >
+                                            <div className="flex items-center gap-3 pl-4">
+                                              <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
+                                                {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                              </div>
+                                              <div className="flex flex-col">
+                                                <span className={`font-medium text-foreground ${sub.best ? 'text-sm' : 'text-sm'}`}>{sub[lang as 'de' | 'en']}</span>
+                                                {sub.best && (
+                                                  <span className="text-xs text-accent font-semibold">{lang === 'de' ? 'Günstiger Variante' : 'Best value'}</span>
+                                                )}
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {sub.price} €</span>
+                                              {sub.oldPrice && (
+                                                <span className="text-muted-foreground text-xs line-through">{sub.oldPrice} €</span>
+                                              )}
+                                            </div>
+                                            <input
+                                              type="checkbox"
+                                              className="hidden"
+                                              checked={isSelected}
+                                              onChange={() => {
+                                                setSelectedCategories(prev =>
+                                                  isSelected ? prev.filter(c => c !== sub.id) : [...prev, sub.id]
+                                                );
+                                              }}
+                                            />
+                                          </label>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
                               );
                             })}
                           </div>
@@ -792,8 +915,8 @@ export default function Dashboard() {
                             <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-6 py-4 flex items-center justify-between z-40 shadow-lg">
                               <p className="text-sm text-foreground">
                                 {lang === 'de'
-                                  ? `${selectedCategories.length} Kategorie(n) ausgewählt, ab ${totalPrice} €`
-                                  : `${selectedCategories.length} category(ies) selected, from ${totalPrice} €`}
+                                  ? `${selectedCategories.length} ausgewählt, ab ${totalPrice} €`
+                                  : `${selectedCategories.length} selected, from ${totalPrice} €`}
                               </p>
                               <Button onClick={() => { setTariffOpen(true); setTariffStep(1); }}>
                                 {lang === 'de' ? 'Weiter' : 'Next'}
