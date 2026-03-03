@@ -782,14 +782,18 @@ export default function Dashboard() {
                         },
                       ];
 
-                      // For basic: flat category list; for unlimited: subcategories
+                      // Basic: only a subset of categories (popular ones), no subcategories
+                      const basicCategoryIds = ['moving', 'cleaning', 'repair', 'beauty', 'tutoring'];
+                      const basicExcludedCategories = categories.filter(c => !basicCategoryIds.includes(c.id));
+                      const basicCategories = categories.filter(c => basicCategoryIds.includes(c.id));
+
                       const allSubIds = tariffType === 'basic'
-                        ? categories.map(c => c.id)
+                        ? basicCategories.map(c => c.id)
                         : categories.flatMap(c => c.subs.map(s => s.id));
                       const totalPrice = tariffType === 'basic'
                         ? selectedCategories.reduce((sum, catId) => {
-                            const cat = categories.find(c => c.id === catId);
-                            return sum + (cat ? cat.subs[0].price : 0); // main category price = first sub (all)
+                            const cat = basicCategories.find(c => c.id === catId);
+                            return sum + (cat ? cat.subs[0].price : 0);
                           }, 0)
                         : selectedCategories.reduce((sum, subId) => {
                             for (const cat of categories) {
@@ -850,37 +854,40 @@ export default function Dashboard() {
 
                           <div className="border border-border rounded-xl overflow-hidden mb-24">
                             {tariffType === 'basic' ? (
-                              /* Basic: flat category list */
-                              categories.map((cat) => {
-                                const isSelected = selectedCategories.includes(cat.id);
-                                const catPrice = cat.subs[0].price; // "all" subcategory price
-                                return (
-                                  <label
-                                    key={cat.id}
-                                    className={`flex items-center justify-between px-5 py-4 cursor-pointer border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
-                                        {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                              /* Basic: limited flat category list */
+                              <>
+                                {basicCategories.map((cat) => {
+                                  const isSelected = selectedCategories.includes(cat.id);
+                                  const catPrice = cat.subs[0].price;
+                                  return (
+                                    <label
+                                      key={cat.id}
+                                      className={`flex items-center justify-between px-5 py-4 cursor-pointer border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
+                                          {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                        </div>
+                                        <span className="font-medium text-foreground">{cat[lang as 'de' | 'en']}</span>
                                       </div>
-                                      <span className="font-medium text-foreground">{cat[lang as 'de' | 'en']}</span>
-                                    </div>
-                                    <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {catPrice} €</span>
-                                    <input
-                                      type="checkbox"
-                                      className="hidden"
-                                      checked={isSelected}
-                                      onChange={() => {
-                                        setSelectedCategories(prev =>
-                                          isSelected ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
-                                        );
-                                      }}
-                                    />
-                                  </label>
-                                );
-                              })
+                                      <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {catPrice} €</span>
+                                      <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={isSelected}
+                                        onChange={() => {
+                                          setSelectedCategories(prev =>
+                                            isSelected ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
+                                          );
+                                        }}
+                                      />
+                                    </label>
+                                  );
+                                })}
+                              </>
                             ) : (
                               /* Unlimited: hierarchical with subcategories */
+
                               categories.map((cat) => {
                                 const isExpanded = expandedCats.includes(cat.id);
                                 const catSubIds = cat.subs.map(s => s.id);
@@ -949,6 +956,41 @@ export default function Dashboard() {
                               })
                             )}
                           </div>
+
+                          {/* Basic: note about excluded categories */}
+                          {tariffType === 'basic' && basicExcludedCategories.length > 0 && (
+                            <div className="mt-4 rounded-xl border border-border bg-muted/30 p-5">
+                              <p className="text-sm font-semibold text-foreground mb-2">
+                                {lang === 'de'
+                                  ? 'Nur im Unbegrenzten Tarif verfügbar:'
+                                  : 'Only available in the Unlimited plan:'}
+                              </p>
+                              <ul className="space-y-1 mb-3">
+                                {basicExcludedCategories.map(cat => (
+                                  <li key={cat.id} className="text-sm text-muted-foreground flex items-center gap-2">
+                                    <span className="text-muted-foreground/50">—</span>
+                                    {cat[lang as 'de' | 'en']}
+                                    {cat.subs.length > 1 && (
+                                      <span className="text-xs text-muted-foreground/60">
+                                        ({cat.subs.length - 1} {lang === 'de' ? 'Unterkategorien' : 'subcategories'})
+                                      </span>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                              <p className="text-xs text-muted-foreground">
+                                {lang === 'de'
+                                  ? 'Der Unbegrenzte Tarif bietet alle Kategorien mit Unterkategorien und unbegrenzte Bewerbungen.'
+                                  : 'The Unlimited plan offers all categories with subcategories and unlimited responses.'}
+                              </p>
+                              <button
+                                onClick={() => { setTariffType('unlimited'); setSelectedCategories([]); }}
+                                className="mt-3 text-sm text-primary hover:underline font-medium"
+                              >
+                                {lang === 'de' ? '→ Zum Unbegrenzten Tarif wechseln' : '→ Switch to Unlimited plan'}
+                              </button>
+                            </div>
+                          )}
 
                           {/* Sticky bottom bar */}
                           {selectedCategories.length > 0 && (
