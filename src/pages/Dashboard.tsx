@@ -782,14 +782,22 @@ export default function Dashboard() {
                         },
                       ];
 
-                      const allSubIds = categories.flatMap(c => c.subs.map(s => s.id));
-                      const totalPrice = selectedCategories.reduce((sum, subId) => {
-                        for (const cat of categories) {
-                          const sub = cat.subs.find(s => s.id === subId);
-                          if (sub) return sum + sub.price;
-                        }
-                        return sum;
-                      }, 0);
+                      // For basic: flat category list; for unlimited: subcategories
+                      const allSubIds = tariffType === 'basic'
+                        ? categories.map(c => c.id)
+                        : categories.flatMap(c => c.subs.map(s => s.id));
+                      const totalPrice = tariffType === 'basic'
+                        ? selectedCategories.reduce((sum, catId) => {
+                            const cat = categories.find(c => c.id === catId);
+                            return sum + (cat ? cat.subs[0].price : 0); // main category price = first sub (all)
+                          }, 0)
+                        : selectedCategories.reduce((sum, subId) => {
+                            for (const cat of categories) {
+                              const sub = cat.subs.find(s => s.id === subId);
+                              if (sub) return sum + sub.price;
+                            }
+                            return sum;
+                          }, 0);
                       const tierMultiplier = tariffType === 'basic'
                         ? (selectedTier === '25' ? 1 : selectedTier === '50' ? 1.78 : 3.12)
                         : (selectedUnlimitedDays === '15' ? 1 : selectedUnlimitedDays === '30' ? 1.7 : selectedUnlimitedDays === '90' ? 3.4 : 1);
@@ -813,8 +821,8 @@ export default function Dashboard() {
                           <p className="text-muted-foreground mb-6">
                             {tariffType === 'basic'
                               ? (lang === 'de'
-                                ? 'Wirtschaftliche Variante mit festgelegter Anzahl an Bewerbungen auf 30 Tage. Wählen Sie Kategorien und Unterkategorien.'
-                                : 'Economical option with a fixed number of responses for 30 days. Select categories and subcategories.')
+                                ? 'Wirtschaftliche Variante mit festgelegter Anzahl an Bewerbungen auf 30 Tage. Wählen Sie eine oder mehrere Kategorien aus der Liste unten.'
+                                : 'Economical option with a fixed number of responses for 30 days. Select one or more categories from the list below.')
                               : (lang === 'de'
                                 ? 'Unbegrenzte Bewerbungen in den ausgewählten Kategorien. Wählen Sie Kategorien und Unterkategorien.'
                                 : 'Unlimited responses in selected categories. Choose categories and subcategories.')}
@@ -841,73 +849,105 @@ export default function Dashboard() {
                           </div>
 
                           <div className="border border-border rounded-xl overflow-hidden mb-24">
-                            {categories.map((cat) => {
-                              const isExpanded = expandedCats.includes(cat.id);
-                              const catSubIds = cat.subs.map(s => s.id);
-                              const selectedInCat = catSubIds.filter(id => selectedCategories.includes(id)).length;
-                              const catTotal = cat.subs.reduce((s, sub) => s + (selectedCategories.includes(sub.id) ? sub.price : 0), 0);
-
-                              return (
-                                <div key={cat.id} className="border-b border-border last:border-0">
-                                  <button
-                                    onClick={() => setExpandedCats(prev => isExpanded ? prev.filter(id => id !== cat.id) : [...prev, cat.id])}
-                                    className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/50 transition-colors"
+                            {tariffType === 'basic' ? (
+                              /* Basic: flat category list */
+                              categories.map((cat) => {
+                                const isSelected = selectedCategories.includes(cat.id);
+                                const catPrice = cat.subs[0].price; // "all" subcategory price
+                                return (
+                                  <label
+                                    key={cat.id}
+                                    className={`flex items-center justify-between px-5 py-4 cursor-pointer border-b border-border last:border-0 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
                                   >
                                     <div className="flex items-center gap-3">
-                                      <span className="font-semibold text-foreground">{cat[lang as 'de' | 'en']}</span>
-                                      {selectedInCat > 0 && (
-                                        <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5 font-medium">
-                                          {selectedInCat}
-                                        </span>
-                                      )}
+                                      <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
+                                        {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                      </div>
+                                      <span className="font-medium text-foreground">{cat[lang as 'de' | 'en']}</span>
                                     </div>
-                                    <svg className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                  </button>
+                                    <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {catPrice} €</span>
+                                    <input
+                                      type="checkbox"
+                                      className="hidden"
+                                      checked={isSelected}
+                                      onChange={() => {
+                                        setSelectedCategories(prev =>
+                                          isSelected ? prev.filter(c => c !== cat.id) : [...prev, cat.id]
+                                        );
+                                      }}
+                                    />
+                                  </label>
+                                );
+                              })
+                            ) : (
+                              /* Unlimited: hierarchical with subcategories */
+                              categories.map((cat) => {
+                                const isExpanded = expandedCats.includes(cat.id);
+                                const catSubIds = cat.subs.map(s => s.id);
+                                const selectedInCat = catSubIds.filter(id => selectedCategories.includes(id)).length;
 
-                                  {isExpanded && (
-                                    <div className="bg-muted/20">
-                                      {cat.subs.map((sub) => {
-                                        const isSelected = selectedCategories.includes(sub.id);
-                                        return (
-                                          <label
-                                            key={sub.id}
-                                            className={`flex items-center justify-between px-5 py-3.5 cursor-pointer border-t border-border/50 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
-                                          >
-                                            <div className="flex items-center gap-3 pl-4">
-                                              <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
-                                                {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                return (
+                                  <div key={cat.id} className="border-b border-border last:border-0">
+                                    <button
+                                      onClick={() => setExpandedCats(prev => isExpanded ? prev.filter(id => id !== cat.id) : [...prev, cat.id])}
+                                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/50 transition-colors"
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <span className="font-semibold text-foreground">{cat[lang as 'de' | 'en']}</span>
+                                        {selectedInCat > 0 && (
+                                          <span className="text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5 font-medium">
+                                            {selectedInCat}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <svg className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+
+                                    {isExpanded && (
+                                      <div className="bg-muted/20">
+                                        {cat.subs.map((sub) => {
+                                          const isSelected = selectedCategories.includes(sub.id);
+                                          return (
+                                            <label
+                                              key={sub.id}
+                                              className={`flex items-center justify-between px-5 py-3.5 cursor-pointer border-t border-border/50 transition-colors ${isSelected ? 'bg-accent/20' : 'hover:bg-muted/40'}`}
+                                            >
+                                              <div className="flex items-center gap-3 pl-4">
+                                                <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${isSelected ? 'bg-accent border-accent' : 'border-muted-foreground/30'}`}>
+                                                  {isSelected && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                  <span className="font-medium text-foreground text-sm">{sub[lang as 'de' | 'en']}</span>
+                                                  {sub.best && (
+                                                    <span className="text-xs text-accent font-semibold">{lang === 'de' ? 'Günstiger Variante' : 'Best value'}</span>
+                                                  )}
+                                                </div>
                                               </div>
-                                              <div className="flex flex-col">
-                                                <span className={`font-medium text-foreground ${sub.best ? 'text-sm' : 'text-sm'}`}>{sub[lang as 'de' | 'en']}</span>
-                                                {sub.best && (
-                                                  <span className="text-xs text-accent font-semibold">{lang === 'de' ? 'Günstiger Variante' : 'Best value'}</span>
+                                              <div className="flex items-center gap-2">
+                                                <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {sub.price} €</span>
+                                                {sub.oldPrice && (
+                                                  <span className="text-muted-foreground text-xs line-through">{sub.oldPrice} €</span>
                                                 )}
                                               </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                              <span className="text-foreground text-sm font-medium">{lang === 'de' ? 'ab' : 'from'} {sub.price} €</span>
-                                              {sub.oldPrice && (
-                                                <span className="text-muted-foreground text-xs line-through">{sub.oldPrice} €</span>
-                                              )}
-                                            </div>
-                                            <input
-                                              type="checkbox"
-                                              className="hidden"
-                                              checked={isSelected}
-                                              onChange={() => {
-                                                setSelectedCategories(prev =>
-                                                  isSelected ? prev.filter(c => c !== sub.id) : [...prev, sub.id]
-                                                );
-                                              }}
-                                            />
-                                          </label>
-                                        );
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
+                                              <input
+                                                type="checkbox"
+                                                className="hidden"
+                                                checked={isSelected}
+                                                onChange={() => {
+                                                  setSelectedCategories(prev =>
+                                                    isSelected ? prev.filter(c => c !== sub.id) : [...prev, sub.id]
+                                                  );
+                                                }}
+                                              />
+                                            </label>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })
+                            )}
                           </div>
 
                           {/* Sticky bottom bar */}
