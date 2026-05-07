@@ -86,14 +86,14 @@ export default function Header() {
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-10">
-            <a href="/" className="flex items-center gap-2">
+            <a href="#/" className="flex items-center gap-2">
               <img src={logo} alt="GetDoIt" className="h-12 md:h-14" />
             </a>
             <nav className="hidden md:flex items-center gap-8">
-              <a href="/create-task" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              <a href="#/create-task" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
                 {tr.nav.createTask}
               </a>
-              <a href="/tasks" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              <a href="#/tasks" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
                 {tr.nav.findTasks}
               </a>
             </nav>
@@ -146,7 +146,7 @@ export default function Header() {
 
                 {/* Messages */}
                 <Button variant="ghost" size="icon" className="relative" asChild>
-                  <a href="/messages">
+                  <a href="#/messages">
                     <MessageSquare className="h-5 w-5" />
                     {unreadMessages > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -207,7 +207,7 @@ export default function Header() {
                 className="hidden md:inline-flex border-accent text-accent hover:bg-accent hover:text-accent-foreground"
                 asChild
               >
-                <a href="/auth">{tr.nav.login}</a>
+                <a href="#/auth">{tr.nav.login}</a>
               </Button>
             )}
             <Button className="md:hidden" variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -219,12 +219,12 @@ export default function Header() {
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
-            <a href="/create-task" className="block text-sm font-medium text-foreground">{tr.nav.createTask}</a>
-            <a href="/tasks" className="block text-sm font-medium text-foreground">{tr.nav.findTasks}</a>
+            <a href="#/create-task" className="block text-sm font-medium text-foreground">{tr.nav.createTask}</a>
+            <a href="#/tasks" className="block text-sm font-medium text-foreground">{tr.nav.findTasks}</a>
             {user ? (
               <>
-                <a href="/dashboard" className="block text-sm font-medium text-foreground">{lt.profile}</a>
-                <a href="/messages" className="block text-sm font-medium text-foreground">{lt.messages}</a>
+                <a href="#/dashboard" className="block text-sm font-medium text-foreground">{lt.profile}</a>
+                <a href="#/messages" className="block text-sm font-medium text-foreground">{lt.messages}</a>
                 <Button variant="outline" size="sm" className="w-full" onClick={() => { setMobileOpen(false); setWalletOpen(true); }}>
                   <Wallet className="h-4 w-4 mr-2" /> {lt.topUp}
                 </Button>
@@ -234,7 +234,7 @@ export default function Header() {
               </>
             ) : (
               <Button variant="outline" size="sm" className="w-full border-accent text-accent" asChild>
-                <a href="/auth">{tr.nav.login}</a>
+                <a href="#/auth">{tr.nav.login}</a>
               </Button>
             )}
           </div>
