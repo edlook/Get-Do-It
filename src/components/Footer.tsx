@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 pt-12 pb-24 relative z-10">
         <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-8">
           <div>
-           <img src={logo} alt="GetDoIt" className="h-16 w-auto mb-4" style={{filter: 'drop-shadow(0 0 1px black) drop-shadow(0 0 1px black) drop-shadow(0 0 1px black)'}} />
+           <img src={logo} alt="GetDoIt" className="h-16 w-auto mb-4" style={{filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.8))'}} />
             <p className="text-sm opacity-70">{tr.footer.rights}</p>
           </div>
           <div>
