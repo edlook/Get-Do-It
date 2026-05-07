@@ -73,7 +73,7 @@ export default function Hero() {
             transition={{ delay: 0.6 }}
           >
             <a
-              href="/auth"
+              href="#/auth"
               className="inline-block mt-6 text-sm font-medium text-primary border border-primary/40 rounded-full px-5 py-2.5 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               {tr.hero.becomeProvider}
