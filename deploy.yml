@@ -17,6 +17,10 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
